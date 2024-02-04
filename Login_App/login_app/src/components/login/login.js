@@ -1,47 +1,46 @@
 
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import './login.css';
 
+const Login = ({ setLoginUser }) => {
+  const history = useNavigate();
 
-import {useState} from "react"
-import "./login.css"
-import axios from "axios"
-import { useNavigate} from "react-router-dom"
+  const [user, setUser] = useState({
+    email: '',
+    password: '',
+  });
 
-const Login = ({ setLoginUser}) => {
+  const login = async () => {
+    try {
+      const response = await axios.post('http://localhost:9002/login', user);
+      const { message, user: loggedInUser, token } = response.data;
 
-    const history = useNavigate()
+      // Save authentication state to localStorage
+      localStorage.setItem('token', token);
 
-    const [ user, setUser] = useState({
-        email:"",
-        password:""
-    })
-
-    const handleChange = e => {
-        const { name, value } = e.target
-        setUser({
-            ...user,
-            [name]: value
-        })
+      alert(message);
+      setLoginUser(loggedInUser);
+      history('/');
+     
+    } catch (error) {
+      console.error('Login error:', error);
     }
+  };
 
-    const login = () => {
-        axios.post("http://localhost:9002/login", user)
-        .then(res => {
-            alert(res.data.message)
-            setLoginUser(res.data.user)
-            history("/")
-        })
-    }
+  return (
+    <div className="login">
+      <h1>Login</h1>
+      <input type="text" name="email" value={user.email} onChange={(e) => setUser({ ...user, email: e.target.value })} placeholder="Enter your Email" />
+      <input type="password" name="password" value={user.password} onChange={(e) => setUser({ ...user, password: e.target.value })} placeholder="Enter your Password" />
+      <div className="button" onClick={login}>Login</div>
+      <div>or</div>
+      <div className="button" onClick={() => history('/register')}>Register</div>
+    </div>
+  );
+};
 
-    return (
-        <div className="login">
-            <h1>Login</h1>
-            <input type="text" name="email" value={user.email} onChange={handleChange} placeholder="Enter your Email"></input>
-            <input type="password" name="password" value={user.password} onChange={handleChange}  placeholder="Enter your Password" ></input>
-            <div className="button" onClick={login}>Login</div>
-            <div>or</div>
-            <div className="button" onClick={() => history("/register")}>Register</div>
-        </div>
-    )
-}
+export default Login;
 
-export default Login
+
