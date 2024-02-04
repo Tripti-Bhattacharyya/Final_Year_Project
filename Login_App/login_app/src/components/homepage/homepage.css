@@ -8,20 +8,6 @@
     width:100vw;
   
 }
-.homepage > .button {
-    background: #1877f2;
-    border: 1px solid #1877f2;
-    color: #fff;
-    font-size: 1.25rem;
-    padding: 0.5rem;
-    margin: 0.5rem 0;
-    border-radius: 8px;
-    height: 70px;
-    width: 120px;
-    outline: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content:center;
-    position: relative;
+.homepage > .button{
+    display: none;
 }
