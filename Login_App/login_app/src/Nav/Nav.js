@@ -12,12 +12,12 @@ const Nav = ({ user,handleLogout }) => {
 
   return (
     <div className="Nav">
-      <span className='nav-logo'>Logo</span>
-
+      <span className='nav-logo'>+Medicare</span>
+      
       <div className={`nav-items ${isOpen && "open"}`}>
         <Link to="/">Home</Link>
         <Link to="/hospital">Hospital</Link>
-        <Link to="/doctors">Doctors</Link>
+        <Link to="/doctors">Apply Doctors</Link>
         <Link to="/patientsstories">Patients Stories</Link>
         <Link to="/contacts">Contacts</Link>
 

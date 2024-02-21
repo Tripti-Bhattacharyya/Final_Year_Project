@@ -1,10 +1,19 @@
 import React from 'react'
-
+import './Doctors.css'
+/*import d1 from "../images/doctor-img01.png"
+import d2 from "../images/doctor-img02.png"*/
 const doctors = () => {
   return (
+    /*<div className="doctor">
+      
+        <img src={d1} className="images"/>
+        <img src={d2} className="images"/>
+      
+    </div>*/
     <div>
-      <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Impedit ducimus, consequuntur libero delectus reprehenderit cum ab amet beatae tenetur corrupti minus nemo animi, atque similique soluta laborum quas. Tempora, nisi!</p>
+      
     </div>
+
   )
 }
 

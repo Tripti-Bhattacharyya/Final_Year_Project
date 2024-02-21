@@ -25,7 +25,8 @@ mongoose.connect("mongodb://127.0.0.1:27017/myLoginRegisterDB", {
 const userSchema = new mongoose.Schema({
     name: String,
     email: String,
-    password: String
+    password: String,
+ 
 });
 
 const User = new mongoose.model("User", userSchema);
@@ -52,7 +53,7 @@ app.post("/login", async (req, res) => {
                 // Set an HTTP-only cookie with the token
                 res.cookie('token', token, { httpOnly: true });
 
-                res.send({ message: "Login Successful", user: { _id: user._id, email: user.email }, token });
+                res.send({ message:("Login Successful"), user: { _id: user._id, email: user.email }, token });
             } else {
                 res.send({ message: "Password didn't match" });
             }
