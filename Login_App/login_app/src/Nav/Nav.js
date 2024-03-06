@@ -1,15 +1,18 @@
 // Nav.js
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+
 import './Nav.css';
 
-const Nav = ({ user,handleLogout }) => {
+const Nav = ({ user, handleLogout }) => {
+  
   const [isOpen, setIsOpen] = useState(false);
-
+ 
   useEffect(() => {
     setIsOpen(false); // Close the nav menu when the user changes
   }, [user]);
-
+  console.log('User object:', user);
   return (
     <div className="Nav">
       <span className='nav-logo'>+Medicare</span>
@@ -17,10 +20,17 @@ const Nav = ({ user,handleLogout }) => {
       <div className={`nav-items ${isOpen && "open"}`}>
         <Link to="/">Home</Link>
         <Link to="/hospital">Hospital</Link>
-        <Link to="/doctors">Apply Doctors</Link>
-        <Link to="/patientsstories">Patients Stories</Link>
-        <Link to="/contacts">Contacts</Link>
+        
+        {/* Render different links based on user type */}
+        {user && user._id ? (
+          user.isDoctor ? ( // Check if user is a doctor
+            <Link to="/doctor-dashboard">Doctor Dashboard</Link>
+          ) : (
+            <Link to="/doctors">Apply Doctors</Link>
+          )
+        ) : null}
 
+        {/* Render login/logout button */}
         {user && user._id ? (
           <div className="logout-button" onClick={handleLogout}>
             Logout
@@ -41,3 +51,6 @@ const Nav = ({ user,handleLogout }) => {
 };
 
 export default Nav;
+
+
+
