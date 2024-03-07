@@ -29,14 +29,41 @@ mongoose.connect("mongodb://127.0.0.1:27017/myLoginRegisterDB", {
 
 
 // User schema and model setup
+const authenticateUser = async (req, res, next) => {
+    const token = req.headers.authorization?.split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({ message: "Authorization token not provided" });
+    }
+
+    try {
+        const decoded = jwt.verify(token, 'abcAgtjddz123');
+        req.user = decoded;
+        next();
+    } catch (error) {
+        console.error("Error verifying token:", error);
+        return res.status(403).json({ message: "Invalid token" });
+    }
+};
+
+// Define error handling middleware
+const errorHandler = (err, req, res, next) => {
+    console.error("Error:", err);
+    res.status(500).json({ message: "Internal server error" });
+};
+
+// Define multer storage for file upload
+
+
+// User schema and model setup
 const userSchema = new mongoose.Schema({
     name: String,
     email: String,
     password: String,
-    isDoctor: { type: Boolean, default: false } // New field to indicate if user is a doctor
+    isDoctor: { type: Boolean, default: false }
 });
 
-const User = new mongoose.model("User", userSchema);
+const User = mongoose.model("User", userSchema);
 const doctorSchema = new mongoose.Schema({
     name: String,
     email: String,
@@ -242,46 +269,58 @@ app.get('/doctors', async (req, res) => {
 
 
 
-app.get('/doctor-dashboard', async (req, res) => {
+// Add route to fetch doctor's appointments
+// Doctor dashboard route
+app.get('/doctor-dashboard', authenticateUser, async (req, res) => {
     try {
-      const doctorId = req.user._id; // Assuming doctor's identity is available after authentication
-  
-      // Retrieve appointments for the doctor
-      const doctorAppointments = await Appointment.find({ doctorId }).populate('userId');
-      res.json(doctorAppointments);
+        const doctorId = req.user.userId;
+        // Fetch appointments for the authenticated doctor
+        const doctorAppointments = await Appointment.find({ doctorId }).populate('userId');
+        res.json(doctorAppointments);
     } catch (error) {
-      console.error('Error fetching doctor dashboard data:', error);
-      res.status(500).json({ message: 'Internal server error' });
+        next(error);
     }
-  });
-  
+});
 
-app.post('/book-appointment/:doctorId', async (req, res) => {
+// Route to approve appointment
+app.put('/appointments/:id/approve', authenticateUser, async (req, res) => {
+    try {
+        const appointmentId = req.params.id;
+        // Update appointment status to 'Approved'
+        await Appointment.findByIdAndUpdate(appointmentId, { status: 'Approved' });
+        res.json({ message: 'Appointment approved successfully' });
+    } catch (error) {
+        next(error);
+    }
+});
+
+// Route to book appointment
+app.post('/book-appointment/:doctorId', authenticateUser, async (req, res) => {
     try {
         const { doctorId } = req.params;
-        console.log('Doctor ID:', doctorId);
         const { selectedDate, selectedTimeSlot } = req.body;
-     
-      // Create a new appointment
-      const appointment = new Appointment({
-        doctorId,
-        userId: req.user._id, // Assuming userId is available after authentication
-        date: selectedDate,
-        timeSlot: selectedTimeSlot
-      });
-      await appointment.save();
-  
-      res.status(201).json({ message: 'Appointment booked successfully' });
+
+        // Create a new appointment
+        const appointment = new Appointment({
+            doctorId,
+            userId: req.user.userId,
+            date: selectedDate,
+            timeSlot: selectedTimeSlot
+        });
+        await appointment.save();
+
+        res.status(201).json({ message: 'Appointment booked successfully' });
     } catch (error) {
-      console.error('Error booking appointment:', error);
-      res.status(500).json({ message: 'Internal server error' });
+        next(error);
     }
-  });
-  
+});
+
+// Error handling middleware
+app.use(errorHandler);
 
 // Start the server
 app.listen(9002, () => {
-    console.log("BE started at port 9002");
+    console.log("Backend server started at port 9002");
 });
 
 

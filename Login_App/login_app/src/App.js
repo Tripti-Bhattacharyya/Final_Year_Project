@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+
 import { Routes, Route, Navigate, BrowserRouter as Router } from 'react-router-dom';
 import Nav from './Nav/Nav';
 import Homepage from './components/homepage/homepage';
@@ -58,6 +58,7 @@ function App() {
         <Route path="/doctors" element={user._id ? (<DoctorList />) : (<Navigate to="/login" />)} />
         <Route path="/doctor-dashboard" element={user._id && user.isDoctor ? (<DoctorDashboard />) : (<Navigate to="/login" />)} />
         <Route path="/book-appointment/:doctorId" element={user._id ? (<Booking user={user} />) : (<Navigate to="/login" />)} />
+       
       </Routes>
     </div>
   );
