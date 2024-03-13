@@ -26,7 +26,10 @@ const Nav = ({ user, handleLogout }) => {
           user.isDoctor ? ( // Check if user is a doctor
             <Link to="/doctor-dashboard">Doctor Dashboard</Link>
           ) : (
+            <>
             <Link to="/doctors">Apply Doctors</Link>
+            <Link to="/appointments">Appointments</Link>
+            </>
           )
         ) : null}
 

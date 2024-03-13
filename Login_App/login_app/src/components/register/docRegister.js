@@ -10,6 +10,8 @@ const DocRegister = () => {
     password: "",
     specialization: "",
     degree: "",
+    fees: "", // Added fee field
+    razorpayLink: "", // Added Razorpay link field
     photo: null,
     isDoctor: true,
     timeslots: {
@@ -59,10 +61,10 @@ const DocRegister = () => {
   };
 
   const registerDoctor = async () => {
-    const { name, email, password, specialization, degree, timeslots, photo } = doctor;
+    const { name, email, password, specialization, degree, fees, razorpayLink, timeslots, photo } = doctor;
 
     // Check if any required field is empty
-    if (!name || !email || !password || !specialization || !degree || !validateTimeslots(timeslots) || !photo) {
+    if (!name || !email || !password || !specialization || !degree || !fees || !razorpayLink || !validateTimeslots(timeslots) || !photo ) {
       alert("Please fill in all required fields and upload a photo");
       return;
     }
@@ -74,6 +76,9 @@ const DocRegister = () => {
       formData.append("password", password);
       formData.append("specialization", specialization);
       formData.append("degree", degree);
+      formData.append("fees", fees);
+      formData.append("razorpayLink", razorpayLink); // Append Razorpay link field
+
       formData.append("timeslots", JSON.stringify(timeslots));
       formData.append("photo", photo);
 
@@ -99,6 +104,8 @@ const DocRegister = () => {
       <input type="password" name="password" value={doctor.password} placeholder="Your Password" onChange={handleChange} />
       <input type="text" name="specialization" value={doctor.specialization} placeholder="Your Specialization" onChange={handleChange} />
       <input type="text" name="degree" value={doctor.degree} placeholder="Your Degree" onChange={handleChange} />
+      <input type="text" name="fees" value={doctor.fees} placeholder="Consultation Fee" onChange={handleChange} />
+      <input type="text" name="razorpayLink" value={doctor.razorpayLink} placeholder="Your Razorpay Link" onChange={handleChange} /> {/* Added Razorpay link input */}
       <input type="file" accept="image/*" onChange={handlePhotoChange} />
 
       {/* Timeslots selection */}
@@ -142,6 +149,8 @@ const DocRegister = () => {
 };
 
 export default DocRegister;
+
+
 
 
 

@@ -34,9 +34,9 @@ const DoctorList = () => {
             <div>{doctor.name}</div>
             <div>{doctor.specialization}</div>
             <div>{doctor.degree}</div>
-            
+            <div>Fees: Rs.{doctor.fees}</div>
             {/* Log doctorId before navigation */}
-            <Link className='link' to={`/book-appointment/${doctor._id}`} onClick={() => console.log('Doctor ID:', doctor._id)}>Book Appointment</Link>
+            <Link className='link' to={`/book-appointment/${doctor._id}`} >Book Appointment</Link>
           </li>
         ))}
       </ul>

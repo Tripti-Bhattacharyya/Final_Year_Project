@@ -15,7 +15,7 @@ app.use(cors({
     origin: 'http://localhost:3000',
     credentials: true 
   }));
-  
+ 
 
 // MongoDB connection setup
 mongoose.connect("mongodb://127.0.0.1:27017/myLoginRegisterDB", {
@@ -71,22 +71,26 @@ const doctorSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     specialization: String,
     degree: String,
+    fees: Number,
     photo: Buffer, // Store photo data as binary
     timeslots: {
-      monday: { start: String, end: String }
+        monday: { start: String, end: String }
     },
+    razorpayLink: String, // Add Razorpay link field
     isDoctor: { type: Boolean, default: true }
 });
-  
+
 const Doctor = mongoose.model('Doctor', doctorSchema);
+
 
 const appointmentSchema = new mongoose.Schema({
     doctorId: { type: mongoose.Schema.Types.ObjectId, ref: 'Doctor' },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     date: Date,
     timeSlot: String,
-    status: { type: String, enum: ['Pending', 'Approved'], default: 'Pending' }
-  });
+    status: { type: String, enum: ['Pending', 'Approved', 'Done'], default: 'Pending' } 
+});
+
   
   const Appointment = mongoose.model('Appointment', appointmentSchema);
   
@@ -204,11 +208,11 @@ app.post("/register", async (req, res) => {
 app.post("/register/doctor", upload.single('photo'), async (req, res) => {
     try {
         // Extract fields from request body
-        const { name, email, password, degree, specialization, timeslots } = req.body;
-        const photoData = req.file.buffer; // Get photo data from memory buffer
+        const { name, email, password, degree,fees, specialization, timeslots,razorpayLink } = req.body;
+        const photoData = req.file.buffer;
 
         // Check if all required fields are provided
-        if (!name || !email || !password || !degree || !specialization || !timeslots || !photoData) {
+        if (!name || !email || !password || !degree || !specialization ||!razorpayLink|| !timeslots || !photoData || !fees) {
             return res.status(400).json({ message: "Missing required fields" });
         }
 
@@ -221,8 +225,10 @@ app.post("/register/doctor", upload.single('photo'), async (req, res) => {
             email,
             password: hashedPassword,
             degree,
+            fees: parseFloat(fees), // Convert fees to number
             specialization,
-            photo: photoData, // Save photo data
+            razorpayLink,
+            photo: photoData,
             timeslots,
         });
 
@@ -314,6 +320,97 @@ app.post('/book-appointment/:doctorId', authenticateUser, async (req, res) => {
         next(error);
     }
 });
+
+
+// Route to mark appointment as done
+app.delete('/appointments/:id/done', authenticateUser, async (req, res) => {
+    try {
+        const appointmentId = req.params.id;
+        
+        // Find the appointment by ID
+        const appointment = await Appointment.findById(appointmentId);
+    
+        // Check if the appointment exists
+        if (!appointment) {
+            return res.status(404).json({ message: 'Appointment not found' });
+        }
+    
+        // Delete the appointment from the database
+        await Appointment.findByIdAndDelete(appointmentId);
+    
+        res.json({ message: 'Appointment marked as done and deleted successfully' });
+    } catch (error) {
+        console.error('Error marking appointment as done:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+
+  // Add route to check appointment status
+  app.get('/check-appointment/:doctorId', authenticateUser, async (req, res) => {
+    try {
+        const doctorId = req.params.doctorId;
+        // Fetch appointment details from the database based on the provided doctor ID and user ID
+        const appointments = await Appointment.find({ doctorId });
+
+        // Check if appointments exist
+        if (!appointments || appointments.length === 0) {
+            return res.status(404).json({ message: "No appointments found for this doctor" });
+        }
+
+        // If appointments exist, return the appointment details
+        res.json(appointments);
+    } catch (error) {
+        console.error('Error checking appointment status:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+
+// Add route to fetch appointments with populated doctor details
+app.get('/appointments/:userId', authenticateUser, async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        // Fetch appointments for the authenticated user and populate doctor details
+        const appointments = await Appointment.find({ userId }).populate('doctorId', 'name');
+        res.json(appointments);
+    } catch (error) {
+        console.error('Error fetching appointments:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+// Backend route to handle appointment cancellation
+app.delete('/cancel-appointment/:id', async (req, res) => {
+    try {
+      const appointmentId = req.params.id;
+      // Find the appointment by ID and delete it from the database
+      const deletedAppointment = await Appointment.findByIdAndDelete(appointmentId);
+      if (!deletedAppointment) {
+        return res.status(404).send('Appointment not found');
+      }
+      res.status(200).send('Appointment cancelled successfully');
+    } catch (error) {
+      console.error('Error cancelling appointment:', error);
+      res.status(500).send('Error cancelling appointment');
+    }
+  });
+  
+// Route to create payment intent
+
+
+app.get('/doctors/:id', async (req, res) => {
+    try {
+        const doctor = await Doctor.findById(req.params.id);
+        if (!doctor) {
+            return res.status(404).json({ message: 'Doctor not found' });
+        }
+        res.json(doctor);
+    } catch (error) {
+        console.error('Error fetching doctor details:', error);
+        res.status(500).json({ message: 'An error occurred while fetching doctor details' });
+    }
+});
+
 
 // Error handling middleware
 app.use(errorHandler);
