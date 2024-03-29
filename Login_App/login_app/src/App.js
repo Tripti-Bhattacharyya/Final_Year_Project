@@ -6,7 +6,7 @@ import Homepage from './components/homepage/homepage';
 import Login from './components/login/login';
 import Register from './components/register/register';
 import DocRegister from './components/register/docRegister';
-import Hospitals from './components/hospitals/Hospitals';
+
 import DoctorDashboard from './components/doctors/DoctorDashboard';
 import DoctorList from './components/doctors/DoctorList';
 import Booking from './components/booking';
@@ -56,7 +56,7 @@ function App() {
         <Route path="/login" element={<Login setLoginUser={setLoginUser} />} />
         <Route path="/register" element={<Register />} />
         <Route path="/register/doctor" element={<DocRegister />} />
-        <Route path="/hospital" element={user._id ? (<Hospitals />) : (<Navigate to="/login" />)} />
+        
         <Route path="/doctors" element={user._id ? (<DoctorList />) : (<Navigate to="/login" />)} />
         <Route path="/doctor-dashboard" element={user._id && user.isDoctor ? (<DoctorDashboard />) : (<Navigate to="/login" />)} />
         <Route path="/book-appointment/:doctorId" element={user._id ? (<Booking user={user} />) : (<Navigate to="/login" />)} />

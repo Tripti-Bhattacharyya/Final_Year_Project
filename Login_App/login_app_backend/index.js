@@ -71,6 +71,7 @@ const doctorSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     specialization: String,
     degree: String,
+    hospital:String,
     fees: Number,
     photo: Buffer, // Store photo data as binary
     timeslots: {
@@ -208,11 +209,11 @@ app.post("/register", async (req, res) => {
 app.post("/register/doctor", upload.single('photo'), async (req, res) => {
     try {
         // Extract fields from request body
-        const { name, email, password, degree,fees, specialization, timeslots,razorpayLink } = req.body;
+        const { name, email, password, degree,hospital,fees, specialization, timeslots,razorpayLink } = req.body;
         const photoData = req.file.buffer;
 
         // Check if all required fields are provided
-        if (!name || !email || !password || !degree || !specialization ||!razorpayLink|| !timeslots || !photoData || !fees) {
+        if (!name || !email || !password || !degree||!hospital || !specialization ||!razorpayLink|| !timeslots || !photoData || !fees) {
             return res.status(400).json({ message: "Missing required fields" });
         }
 
@@ -225,6 +226,7 @@ app.post("/register/doctor", upload.single('photo'), async (req, res) => {
             email,
             password: hashedPassword,
             degree,
+            hospital,
             fees: parseFloat(fees), // Convert fees to number
             specialization,
             razorpayLink,

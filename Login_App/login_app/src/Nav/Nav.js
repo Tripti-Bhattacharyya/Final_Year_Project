@@ -19,7 +19,7 @@ const Nav = ({ user, handleLogout }) => {
       
       <div className={`nav-items ${isOpen && "open"}`}>
         <Link to="/">Home</Link>
-        <Link to="/hospital">Hospital</Link>
+        
         
         {/* Render different links based on user type */}
         {user && user._id ? (
