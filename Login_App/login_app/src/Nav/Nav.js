@@ -2,13 +2,14 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-
+import axios from 'axios';
 import './Nav.css';
 
 const Nav = ({ user, handleLogout }) => {
   
   const [isOpen, setIsOpen] = useState(false);
  
+
   useEffect(() => {
     setIsOpen(false); // Close the nav menu when the user changes
   }, [user]);
@@ -29,10 +30,11 @@ const Nav = ({ user, handleLogout }) => {
             <>
             <Link to="/doctors">Apply Doctors</Link>
             <Link to="/appointments">Appointments</Link>
+         
             </>
           )
         ) : null}
-
+ 
         {/* Render login/logout button */}
         {user && user._id ? (
           <div className="logout-button" onClick={handleLogout}>
@@ -49,6 +51,7 @@ const Nav = ({ user, handleLogout }) => {
       >
         <div className="bar"></div>
       </div>
+      
     </div>
   );
 };

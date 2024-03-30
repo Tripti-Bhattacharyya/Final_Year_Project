@@ -413,6 +413,34 @@ app.get('/doctors/:id', async (req, res) => {
     }
 });
 
+app.get('/search-doctors', async (req, res) => {
+    try {
+        const { query } = req.query;
+
+        // Search for doctors matching the query
+        const doctors = await Doctor.find({
+            $or: [
+                { name: { $regex: query, $options: 'i' } },
+                { hospital: { $regex: query, $options: 'i' } },
+                { specialization: { $regex: query, $options: 'i' } }
+            ]
+        });
+
+        // Convert photo Buffers to Base64 strings
+        const doctorsWithBase64Photos = doctors.map(doctor => {
+            if (doctor.photo && doctor.photo.data) {
+                const base64Photo = doctor.photo.data.toString('base64');
+                return { ...doctor.toObject(), photo: base64Photo };
+            }
+            return doctor.toObject();
+        });
+
+        res.json(doctorsWithBase64Photos);
+    } catch (error) {
+        console.error('Error searching doctors:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 
 // Error handling middleware
 app.use(errorHandler);
