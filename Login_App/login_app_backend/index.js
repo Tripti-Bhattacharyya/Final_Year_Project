@@ -89,7 +89,7 @@ const appointmentSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     date: Date,
     timeSlot: String,
-    status: { type: String, enum: ['Pending', 'Approved', 'Done'], default: 'Pending' } 
+    status: { type: String, enum: ['Pending', 'Approved', 'Done','Paid'], default: 'Pending' } 
 });
 
   
@@ -216,7 +216,10 @@ app.post("/register/doctor", upload.single('photo'), async (req, res) => {
         if (!name || !email || !password || !degree||!hospital || !specialization ||!razorpayLink|| !timeslots || !photoData || !fees) {
             return res.status(400).json({ message: "Missing required fields" });
         }
-
+        const existingDoctor = await Doctor.findOne({ email });
+        if (existingDoctor) {
+            return res.status(400).json({ message: "Doctor with this email already exists" });
+        }
         // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -441,6 +444,36 @@ app.get('/search-doctors', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+// Backend route to update appointment status after payment
+app.patch('/appointments/:id', authenticateUser, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        // Check if the provided status is a valid appointment status
+        const validStatuses = ['Pending', 'Approved', 'Done',  'Paid'];
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({ message: 'Invalid appointment status' });
+        }
+
+        // Find the appointment by ID
+        const appointment = await Appointment.findById(id);
+        if (!appointment) {
+            return res.status(404).json({ message: 'Appointment not found' });
+        }
+
+        // Update the appointment status
+        appointment.status = status;
+        await appointment.save();
+
+        res.json({ message: 'Appointment status updated successfully', appointment });
+    } catch (error) {
+        console.error('Error updating appointment status:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
 
 // Error handling middleware
 app.use(errorHandler);

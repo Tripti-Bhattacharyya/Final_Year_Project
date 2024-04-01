@@ -25,28 +25,48 @@ const Appointments = ({ user }) => {
         fetchAppointments();
     }, [user._id]);
 
-    const handlePayment = async (doctorId) => {
-      try {
-          const token = localStorage.getItem('token');
-          const response = await axios.get(`http://localhost:9002/doctors/${doctorId}`, {
-              headers: {
-                  Authorization: `Bearer ${token}`
-              }
-          });
-  
-          const razorpayLink = response.data.razorpayLink;
-          if (razorpayLink) {
-              window.open(razorpayLink, '_blank');
-          } else {
-              console.error('Razorpay link not found for the doctor');
-              alert('Payment link is not available for this doctor.');
-          }
-      } catch (error) {
-          console.error('Error fetching doctor details:', error);
-          alert('An error occurred while fetching doctor details.');
-      }
-  };
-  
+    const handlePayment = async (doctorId, appointmentId) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.get(`http://localhost:9002/doctors/${doctorId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            const razorpayLink = response.data.razorpayLink;
+            if (razorpayLink) {
+                window.open(razorpayLink, '_blank');
+                // Assuming there's an API to update appointment status after payment
+                await axios.patch(`http://localhost:9002/appointments/${appointmentId}`, { status: 'Paid' }, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                // Update appointment status locally
+                const updatedAppointments = appointments.map(appointment => {
+                    if (appointment._id === appointmentId) {
+                        return { ...appointment, status: 'Paid' };
+                    }
+                    console.log(appointment.status);
+                    return appointment;
+                });
+                setAppointments(updatedAppointments);
+                console.log("in the handlePayment")
+            } else {
+                console.error('Razorpay link not found for the doctor');
+                alert('Payment link is not available for this doctor.');
+            }
+        } catch (error) {
+            console.error('Error fetching doctor details:', error);
+            alert('An error occurred while fetching doctor details.');
+        }
+    };
+
+    const handleChat = () => {
+        console.log('Chat button clicked');
+        navigate('/chat');
+    };
 
     return (
         <div>
@@ -57,10 +77,14 @@ const Appointments = ({ user }) => {
                         Doctor: {appointment.doctorId.name}, Date: {appointment.date}, Time: {appointment.timeSlot}, Status: {appointment.status}
                         {appointment.status === "Approved" && (
                             <div>
-                                <button onClick={() => handlePayment(appointment.doctorId._id)}>Proceed to Payment</button>
+                                <button onClick={() => handlePayment(appointment.doctorId._id, appointment._id)}>Proceed to Payment</button>
+                               
 
                             </div>
                         )}
+                        {appointment.status === "Paid" && (
+                                    <button onClick={() => handleChat()}>Chat</button>
+                            )}
                     </li>
                 ))}
             </ul>
@@ -69,6 +93,7 @@ const Appointments = ({ user }) => {
 };
 
 export default Appointments;
+
 
 
 

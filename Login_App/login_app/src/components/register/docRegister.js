@@ -71,6 +71,11 @@ const DocRegister = () => {
     }
 
     try {
+      const existingDoctor = await axios.get(`http://localhost:9002/doctors?email=${email}`);
+    if (existingDoctor.data.length > 0) {
+      alert("Doctor with this email already exists");
+      return;
+    }
       const formData = new FormData();
       formData.append("name", name);
       formData.append("email", email);
