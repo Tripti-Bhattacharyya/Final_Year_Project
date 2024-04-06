@@ -25,7 +25,10 @@ const Nav = ({ user, handleLogout }) => {
         {/* Render different links based on user type */}
         {user && user._id ? (
           user.isDoctor ? ( // Check if user is a doctor
+          <>
             <Link to="/doctor-dashboard">Doctor Dashboard</Link>
+            <Link to={`/doctor-chat/${user._id}`}>Doctor Chat</Link>
+            </>
           ) : (
             <>
             <Link to="/doctors">Apply Doctors</Link>

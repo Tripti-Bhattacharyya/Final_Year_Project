@@ -72,7 +72,7 @@ const DocRegister = () => {
 
     try {
       const existingDoctor = await axios.get(`http://localhost:9002/doctors?email=${email}`);
-    if (existingDoctor.data.length > 0) {
+    if (existingDoctor.data===email ) {
       alert("Doctor with this email already exists");
       return;
     }

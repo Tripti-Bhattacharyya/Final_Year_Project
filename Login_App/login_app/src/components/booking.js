@@ -14,7 +14,7 @@ const Booking = ({ user }) => {
     const checkAppointmentStatus = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`http://localhost:9002/check-appointment/${doctorId}`, {
+        const response = await axios.get(`http://localhost:9002/check-appointment/${doctorId}/${user._id}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -45,7 +45,7 @@ const Booking = ({ user }) => {
   const handleBooking = async () => {
     if (isBooking) return; // Prevent multiple bookings
     setIsBooking(true); // Lock the booking process
-
+  
     try {
       const token = localStorage.getItem('token');
       if (bookingStatus === 'Already Booked') {
@@ -69,12 +69,17 @@ const Booking = ({ user }) => {
         setBookingStatus(response.data.message);
       }
     } catch (error) {
-      console.error('Error booking or cancelling appointment:', error);
-      setBookingStatus('Error processing appointment');
+      if (error.response && error.response.status === 400 && error.response.data.message === 'The selected time slot is already booked') {
+        setBookingStatus('The selected time slot is already booked');
+      } else {
+        console.error('Error booking or cancelling appointment:', error);
+        setBookingStatus('Error processing appointment');
+      }
     } finally {
       setIsBooking(true); // Release the lock
     }
   };
+  
 
   return (
     <div>

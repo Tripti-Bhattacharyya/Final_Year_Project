@@ -48,11 +48,11 @@ const Appointments = ({ user }) => {
                     if (appointment._id === appointmentId) {
                         return { ...appointment, status: 'Paid' };
                     }
-                    console.log(appointment.status);
+                   
                     return appointment;
                 });
                 setAppointments(updatedAppointments);
-                console.log("in the handlePayment")
+               
             } else {
                 console.error('Razorpay link not found for the doctor');
                 alert('Payment link is not available for this doctor.');
@@ -63,10 +63,11 @@ const Appointments = ({ user }) => {
         }
     };
 
-    const handleChat = () => {
+    const handleChat = (doctorId) => {
         console.log('Chat button clicked');
-        navigate('/chat');
+        navigate(`/chat/${doctorId}/${user._id}`);
     };
+    
 
     return (
         <div>
@@ -83,7 +84,8 @@ const Appointments = ({ user }) => {
                             </div>
                         )}
                         {appointment.status === "Paid" && (
-                                    <button onClick={() => handleChat()}>Chat</button>
+                                    <button onClick={() => handleChat(appointment.doctorId._id)}>Start Chat</button>
+
                             )}
                     </li>
                 ))}

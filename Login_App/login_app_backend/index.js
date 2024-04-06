@@ -5,18 +5,36 @@ import cors from "cors";
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { Server } from "socket.io"; 
+import http from "http";
 
 import multer from "multer"; 
+
 const app = express();
+
+app.use(cors());
+
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: 'http://localhost:3000',
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['my-custom-header'],
+    credentials: true
+  }
+});
+
+
+
+
+
 app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // Add extended: true option
-app.use(cors({
-    origin: 'http://localhost:3000',
-    credentials: true 
-  }));
- 
 
+
+ 
 // MongoDB connection setup
 mongoose.connect("mongodb://127.0.0.1:27017/myLoginRegisterDB", {
     useNewUrlParser: true,
@@ -28,6 +46,9 @@ mongoose.connect("mongodb://127.0.0.1:27017/myLoginRegisterDB", {
 });
 
 
+
+
+  
 // User schema and model setup
 const authenticateUser = async (req, res, next) => {
     const token = req.headers.authorization?.split(' ')[1];
@@ -51,8 +72,6 @@ const errorHandler = (err, req, res, next) => {
     console.error("Error:", err);
     res.status(500).json({ message: "Internal server error" });
 };
-
-// Define multer storage for file upload
 
 
 // User schema and model setup
@@ -94,6 +113,14 @@ const appointmentSchema = new mongoose.Schema({
 
   
   const Appointment = mongoose.model('Appointment', appointmentSchema);
+
+
+  const messageSchema = new mongoose.Schema({
+    doctorId: { type: mongoose.Schema.Types.ObjectId, ref: 'Doctor' },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    content: String,
+  }, { timestamps: true });
+  const Message = mongoose.model('Message', messageSchema);
   
   const storage = multer.memoryStorage(); // Store file data in memory instead of on disk
   const upload = multer({ storage: storage });
@@ -101,6 +128,81 @@ const appointmentSchema = new mongoose.Schema({
 const generateToken = (userId) => {
     return jwt.sign({ userId }, 'abcAgtjddz123', { expiresIn: '1h' });
 };
+
+//chat
+// WebSocket connection handling
+io.on('connection', (socket) => {
+    console.log('A user connected');
+  
+    // Event listener for getUsers
+
+    socket.on('getUsers', async (doctorId) => {
+        try {
+            const userIds = await Message.distinct('userId', { doctorId });  // Get distinct user IDs who sent messages
+            console.log(userIds); // Add this line to check the value of userIds
+    
+            // Filter out any non-string values and ensure they are valid ObjectId strings
+           
+    
+            // Fetch user details for valid IDs
+            const users = await User.find({ _id: userIds }, 'name'); // Fetch user details for those IDs
+            console.log(users);
+            socket.emit('users', users);
+        } catch (error) {
+            console.error('Error fetching users:', error);
+        }
+    });
+
+
+  
+    // Event listener for getMessages
+    socket.on('getMessages', async ({ userId, doctorId }) => {
+      try {
+        const messages = await Message.find({ userId, doctorId }).sort({ createdAt: 'asc' }).exec();
+        socket.emit('messages', messages);
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+      }
+    });
+    // Event listener for sendMessage
+socket.on('sendMessage', async ({ userId, doctorId, content }) => {
+    try {
+      // Save the message to the database
+      const message = new Message({ userId, doctorId, content });
+      await message.save();
+  
+      // Emit the message to the doctor's room
+      socket.to(doctorId).emit('message', message);
+  
+      // If you want to send the message back to the sender as well, you can emit it to the sender's room
+      socket.emit('message', message);
+    } catch (error) {
+      console.error('Error saving message:', error);
+    }
+  });
+  
+  
+    // Disconnect event
+    socket.on('disconnect', () => {
+      console.log('A user disconnected');
+    });
+  });
+
+
+// Add route to fetch list of users who sent messages to the doctor
+app.get('chat/:doctorId/:userId', async (req, res) => {
+    try {
+        const { doctorId, userId } = req.params;
+        // Fetch chat history between the doctor and the selected user from the database
+        const messages = await Message.find({ doctorId, userId }).sort({ createdAt: 'asc' });
+        res.json(messages);
+    } catch (error) {
+        console.error('Error fetching chat history:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+//
 
 
 // Login route
@@ -306,10 +408,17 @@ app.put('/appointments/:id/approve', authenticateUser, async (req, res) => {
 });
 
 // Route to book appointment
+
 app.post('/book-appointment/:doctorId', authenticateUser, async (req, res) => {
     try {
         const { doctorId } = req.params;
         const { selectedDate, selectedTimeSlot } = req.body;
+
+        // Check if the requested time slot is available for the doctor
+        const existingAppointments = await Appointment.find({ doctorId, date: selectedDate, timeSlot: selectedTimeSlot });
+        if (existingAppointments.length > 0) {
+            return res.status(400).json({ message: 'The selected time slot is already booked' });
+        }
 
         // Create a new appointment
         const appointment = new Appointment({
@@ -322,9 +431,11 @@ app.post('/book-appointment/:doctorId', authenticateUser, async (req, res) => {
 
         res.status(201).json({ message: 'Appointment booked successfully' });
     } catch (error) {
-        next(error);
+        console.error('Error booking appointment:', error);
+        res.status(500).json({ message: 'An error occurred while booking the appointment' });
     }
 });
+
 
 
 // Route to mark appointment as done
@@ -352,24 +463,26 @@ app.delete('/appointments/:id/done', authenticateUser, async (req, res) => {
 
 
   // Add route to check appointment status
-  app.get('/check-appointment/:doctorId', authenticateUser, async (req, res) => {
+  app.get('/check-appointment/:doctorId/:userId', authenticateUser, async (req, res) => {
     try {
-        const doctorId = req.params.doctorId;
+        const { doctorId, userId } = req.params;
+        
         // Fetch appointment details from the database based on the provided doctor ID and user ID
-        const appointments = await Appointment.find({ doctorId });
+        const appointment = await Appointment.findOne({ doctorId, userId });
 
-        // Check if appointments exist
-        if (!appointments || appointments.length === 0) {
-            return res.status(404).json({ message: "No appointments found for this doctor" });
+        // Check if appointment exists
+        if (!appointment) {
+            return res.status(404).json({ message: "Appointment not found for this doctor and user" });
         }
 
-        // If appointments exist, return the appointment details
-        res.json(appointments);
+        // If appointment exists, return the appointment details
+        res.json(appointment);
     } catch (error) {
         console.error('Error checking appointment status:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
+
 
 
 // Add route to fetch appointments with populated doctor details
@@ -475,12 +588,14 @@ app.patch('/appointments/:id', authenticateUser, async (req, res) => {
 });
 
 
+
 // Error handling middleware
 app.use(errorHandler);
 
 // Start the server
-app.listen(9002, () => {
-    console.log("Backend server started at port 9002");
+const PORT = process.env.PORT || 9002;
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
 
 
