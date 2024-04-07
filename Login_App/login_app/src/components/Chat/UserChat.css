@@ -1,0 +1,70 @@
+/* UserChat.css */
+
+.user-chat-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 90vh; 
+    width: 100%; 
+}
+
+.chat-messages {
+    flex-grow: 1; /* Allow messages to grow and fill remaining space */
+    overflow-y: auto; /* Enable vertical scrolling for overflow */
+    padding: 10px;
+}
+
+.message {
+    margin-bottom: 10px;
+    padding: 8px;
+    border-radius: 8px;
+    max-width: 70%;
+}
+
+.message.left {
+    align-self: flex-start; /* Align left for messages sent by the user */
+    background-color: #e5e5ea; /* Light background color for user messages */
+}
+
+.right {
+    align-self: flex-end; /* Align right for messages sent by others */
+    background-color: #007aff; /* Blue background color for other messages */
+    color: white; /* White text color for other messages */
+}
+
+.message-content {
+    margin-bottom: 4px;
+}
+
+.message-timestamp {
+    font-size: 12px;
+    color: #666;
+}
+
+.input-container {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+.message-input {
+    flex-grow: 1; /* Allow input field to grow and fill remaining space */
+    margin-right: 10px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.send-button {
+    padding: 8px 16px;
+    background-color: #007aff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.send-button:hover {
+    background-color: #0056b3; /* Darker shade on hover */
+}

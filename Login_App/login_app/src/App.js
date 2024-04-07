@@ -60,7 +60,7 @@ function App() {
         <Route path="/book-appointment/:doctorId" element={user._id ? (<Booking user={user} />) : (<Navigate to="/login" />)} />
         <Route path="/appointments" element={user._id ? (<Appointments user={user} />) : (<Navigate to="/login" />)} />
         <Route path="/doctor-chat/:doctorId" element={user._id && user.isDoctor ? (<DoctorChat doctorId={user._id}/>) : (<Navigate to="/login" />)} />
-        <Route path="/chat/:doctorId/:userId" element={user._id ?(<UserChat user={user}/>): (<Navigate to="/login" />)} />
+        <Route path="/chat/:doctorId/:userId" element={user._id ?(<UserChat user={user._id}/>): (<Navigate to="/login" />)} />
       </Routes>
     </div>
   );

@@ -118,6 +118,7 @@ const appointmentSchema = new mongoose.Schema({
   const messageSchema = new mongoose.Schema({
     doctorId: { type: mongoose.Schema.Types.ObjectId, ref: 'Doctor' },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    senderId: { type: mongoose.Schema.Types.ObjectId }, 
     content: String,
   }, { timestamps: true });
   const Message = mongoose.model('Message', messageSchema);
@@ -131,6 +132,7 @@ const generateToken = (userId) => {
 
 //chat
 // WebSocket connection handling
+
 io.on('connection', (socket) => {
     console.log('A user connected');
   
@@ -160,26 +162,33 @@ io.on('connection', (socket) => {
       try {
         const messages = await Message.find({ userId, doctorId }).sort({ createdAt: 'asc' }).exec();
         socket.emit('messages', messages);
+        
       } catch (error) {
         console.error('Error fetching messages:', error);
       }
     });
     // Event listener for sendMessage
+// Event listener for sendMessage
 socket.on('sendMessage', async ({ userId, doctorId, content }) => {
     try {
-      // Save the message to the database
-      const message = new Message({ userId, doctorId, content });
-      await message.save();
-  
-      // Emit the message to the doctor's room
-      socket.to(doctorId).emit('message', message);
-  
-      // If you want to send the message back to the sender as well, you can emit it to the sender's room
-      socket.emit('message', message);
+        // Determine senderId based on whether the user sending the message is the current user or the doctor
+        const senderId = userId === socket.handshake.query.userId ? userId : doctorId;
+        console.log("This is Socket:",socket.handshake.query.userId );
+        console.log("sender:",senderId);
+        // Save the message to the database with the correct senderId
+        const message = new Message({ userId, doctorId, content, senderId });
+        await message.save();
+
+        // Emit the message to the doctor's room
+        socket.to(doctorId).emit('message', message);
+        console.log(message);
+        // If you want to send the message back to the sender as well, you can emit it to the sender's room
+        socket.emit('message', message);
     } catch (error) {
-      console.error('Error saving message:', error);
+        console.error('Error saving message:', error);
     }
-  });
+});
+
   
   
     // Disconnect event
@@ -202,7 +211,7 @@ app.get('chat/:doctorId/:userId', async (req, res) => {
     }
 });
 
-//
+//==============>
 
 
 // Login route
