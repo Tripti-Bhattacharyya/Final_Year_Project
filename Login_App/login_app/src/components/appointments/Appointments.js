@@ -48,7 +48,7 @@ const Appointments = ({ user }) => {
                     if (appointment._id === appointmentId) {
                         return { ...appointment, status: 'Paid' };
                     }
-                   
+                    
                     return appointment;
                 });
                 setAppointments(updatedAppointments);

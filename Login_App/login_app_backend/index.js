@@ -180,7 +180,7 @@ socket.on('sendMessage', async ({ userId, doctorId, content }) => {
         await message.save();
 
         // Emit the message to the doctor's room
-        socket.to(doctorId).emit('message', message);
+        io.emit('message', message);
         console.log(message);
         // If you want to send the message back to the sender as well, you can emit it to the sender's room
         socket.emit('message', message);
