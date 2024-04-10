@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -14,16 +13,23 @@ const Login = ({ setLoginUser }) => {
 
   const login = async () => {
     try {
-      const response = await axios.post('http://localhost:9002/login', user);
+      const response = await axios.post("http://localhost:9002/login", user);
       const { message, user: loggedInUser, token } = response.data;
 
-      // Save authentication state to localStorage
-      localStorage.setItem('token', token);
+      if (message === "Login Successful") {
+        // Save authentication state to localStorage
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(loggedInUser));
 
-      alert(message);
-      setLoginUser(loggedInUser);
-      history('/');
-     
+        // Update the user state
+        setLoginUser(loggedInUser);
+
+        // Redirect the user to the homepage
+        history('/');
+
+      } else {
+        alert(message); // Display the error message
+      }
     } catch (error) {
       console.error('Login error:', error);
     }
@@ -42,5 +48,10 @@ const Login = ({ setLoginUser }) => {
 };
 
 export default Login;
+
+
+
+
+
 
 

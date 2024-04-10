@@ -1,0 +1,25 @@
+
+.d_list{
+    display: flex;
+    flex-direction: row;
+    list-style: none;
+}
+.list{
+    padding: 10px;
+    margin: 5px;
+    width: 250px;
+    height: 320px;
+    border: 2px solid red;
+}
+.image{
+    height: 200px;
+    width: 200px;
+}
+.link{
+    color: black;
+    
+}
+.link:hover{
+    color: rgb(243, 1, 203);
+
+}
