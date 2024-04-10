@@ -7,9 +7,10 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Server } from "socket.io"; 
 import http from "http";
+import crypto from 'crypto';
 
 import multer from "multer"; 
-
+import axios from 'axios';
 const app = express();
 
 app.use(cors());
@@ -568,7 +569,7 @@ app.get('/search-doctors', async (req, res) => {
 });
 
 // Backend route to update appointment status after payment
-app.patch('/appointments/:id', authenticateUser, async (req, res) => {
+app.put('/appointments/:id', authenticateUser, async (req, res) => {
     try {
         const { id } = req.params;
         const { status } = req.body;
@@ -596,6 +597,147 @@ app.patch('/appointments/:id', authenticateUser, async (req, res) => {
     }
 });
 
+// Function to verify Razorpay webhook signature
+// Function to verify webhook signature
+const verifyWebhookSignature = (payload, signature, secret) => {
+    const generatedSignature = crypto.createHmac('sha256', secret).update(payload).digest('hex');
+    return generatedSignature === signature;
+};
+
+// Function to capture payment
+const capturePayment = async (paymentId, amount, appointmentId) => {
+    try {
+        const response = await axios.post(
+            `https://api.razorpay.com/v1/payments/${paymentId}/capture?amount=${amount}`,
+            {}, // Empty request body
+            {
+                auth: {
+                    username: 'rzp_test_X50Ftg7u2gTNyg',
+                    password: 'hoESSHePnv6b0u5uJ2w7RmPR'
+                }
+            }
+        );
+
+        const captureDetails = response.data;
+        console.log('Payment captured successfully:', captureDetails);
+
+        // Update appointment status to 'Paid'
+        await Appointment.findByIdAndUpdate(appointmentId, { status: 'Paid' });
+
+        return captureDetails;
+    } catch (error) {
+        console.error('Error capturing payment:', error.response.data);
+        throw error;
+    }
+};
+
+// Route to handle Razorpay webhook notifications
+app.post('/webhook', async (req, res) => {
+    const webhookSecret = 'Tripti@2024';
+
+    const payload = JSON.stringify(req.body);
+    const signature = req.get('x-razorpay-signature');
+
+    if (!verifyWebhookSignature(payload, signature, webhookSecret)) {
+        return res.status(400).send('Invalid webhook signature');
+    }
+
+    // Payment successful, get payment details from Razorpay
+    const paymentId = req.body.payload.payment.entity.id;
+    console.log("Payment:", paymentId);
+    console.log("Request Body:", req.body);
+
+    try {
+        const response = await axios.get(`https://api.razorpay.com/v1/payments/${paymentId}`, {
+            auth: {
+                username: 'rzp_test_X50Ftg7u2gTNyg', // Replace with your actual API key ID
+                password: 'hoESSHePnv6b0u5uJ2w7RmPR' // Replace with your actual API key secret
+            }
+        });
+
+        const paymentDetails = response.data;
+        if (paymentDetails.status === 'captured') {
+            // If payment is already captured, update appointment status to 'Paid'
+            const appointmentId = req.body.payload.payment.entity.notes.appointmentId;
+          // await Appointment.findByIdAndUpdate(appointmentId, { status: 'Paid' });
+
+            return res.status(200).send('Appointment status updated to Paid');
+        } else if (paymentDetails.status === 'authorized') {
+            // If payment is authorized, capture it and update appointment status to 'Paid'
+            const appointmentId = req.body.payload.payment.entity.notes.appointmentId;
+            const appointment = await Appointment.findById(appointmentId);
+            const doctorId = appointment.doctorId;
+            const doctor = await Doctor.findById(doctorId);
+
+            await capturePayment(paymentId, doctor.fees * 100, appointmentId);
+            await transferPaymentToDoctor(doctor.fees * 100, doctorId,appointmentId);
+            return res.status(200).send('Payment captured and appointment status updated to Paid');
+        } else {
+            return res.status(200).send('Payment status not captured');
+        }
+    } catch (error) {
+        console.error('Error processing payment:', error);
+        return res.status(500).send('Error processing payment');
+    }
+});
+const transferPaymentToDoctor = async (amount, doctorId, appointmentId) => {
+    try {
+        // Get doctor's Razorpay link from the database based on doctorId
+        const doctor = await Doctor.findById(doctorId);
+        const razorpayLink = doctor.razorpayLink;
+        console.log(razorpayLink);
+        // Transfer payment to doctor's account using doctor's Razorpay link
+        const transferResponse = await transferPayment(amount, razorpayLink, appointmentId);
+        
+        // Handle the transfer response
+        if (transferResponse.success) {
+            // Payment transfer successful, update appointment status to 'Paid' in the database
+            await Appointment.findByIdAndUpdate(appointmentId, { status: 'Paid' });
+            console.log('Payment transferred successfully to doctor:', transferResponse.transactionId);
+        } else {
+            // Payment transfer failed, handle the error
+            console.error('Payment transfer failed:', transferResponse.error);
+            throw new Error('Payment transfer failed');
+        }
+    } catch (error) {
+        console.error('Error transferring payment to doctor:', error);
+        // Handle the error accordingly
+        throw error;
+    }
+};
+const transferPayment = async (amount, razorpayLink, appointmentId) => {
+    try {
+        // Make API call to transfer payment to doctor's account using Razorpay link
+        const response = await axios.post(
+            razorpayLink, // Doctor's Razorpay link
+            {
+                amount: amount, 
+                currency: 'INR',
+                notes: {
+                    appointmentId: appointmentId // Add any additional parameters as needed
+                }
+            },
+            {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+
+        const transferDetails = response.data;
+        console.log('Payment transferred successfully:', transferDetails);
+
+        // Return success response
+        return {
+            success: true,
+            transactionId: transferDetails.id
+        };
+    } catch (error) {
+        console.error('Error transferring payment:', error.response.data);
+        throw new Error('Error transferring payment');
+    }
+};
+
 
 
 // Error handling middleware
@@ -606,6 +748,9 @@ const PORT = process.env.PORT || 9002;
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+
+
 
 
 

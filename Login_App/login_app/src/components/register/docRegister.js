@@ -13,6 +13,7 @@ const DocRegister = () => {
     hospital:"",
     fees: "", 
     razorpayLink: "", 
+   
     photo: null,
     isDoctor: true,
     timeslots: {
@@ -62,10 +63,10 @@ const DocRegister = () => {
   };
 
   const registerDoctor = async () => {
-    const { name, email, password, specialization, degree, fees, razorpayLink, timeslots, photo,hospital } = doctor;
+    const { name, email, password, specialization, degree, fees, razorpayLink,timeslots, photo,hospital } = doctor;
 
     // Check if any required field is empty
-    if (!name || !email || !password || !specialization || !degree || !fees || !razorpayLink || !validateTimeslots(timeslots) || !photo || !hospital) {
+    if (!name || !email || !password || !specialization || !degree || !fees || !razorpayLink|| !validateTimeslots(timeslots) || !photo || !hospital) {
       alert("Please fill in all required fields and upload a photo");
       return;
     }
@@ -84,7 +85,8 @@ const DocRegister = () => {
       formData.append("degree", degree);
       formData.append("hospital", hospital);
       formData.append("fees", fees);
-      formData.append("razorpayLink", razorpayLink); // Append Razorpay link field
+      formData.append("razorpayLink", razorpayLink); 
+     
 
       formData.append("timeslots", JSON.stringify(timeslots));
       formData.append("photo", photo);
@@ -113,10 +115,11 @@ const DocRegister = () => {
       <input type="text" name="degree" value={doctor.degree} placeholder="Your Degree" onChange={handleChange} />
       <input type="text" name="hospital" value={doctor.hospital} placeholder="Your Hospital" onChange={handleChange} />
       <input type="text" name="fees" value={doctor.fees} placeholder="Consultation Fee" onChange={handleChange} />
-      <input type="text" name="razorpayLink" value={doctor.razorpayLink} placeholder="Your Razorpay Link" onChange={handleChange} /> {/* Added Razorpay link input */}
+      <input type="text" name="razorpayLink" value={doctor.razorpayLink} placeholder="Your Razorpay Link" onChange={handleChange} /> 
+      
       <input type="file" accept="image/*" onChange={handlePhotoChange} />
 
-      {/* Timeslots selection */}
+      
       <div>
         <label>Monday:</label>
         <select value={doctor.timeslots.monday.start} onChange={(e) => handleChange(e)} name="monday_start">

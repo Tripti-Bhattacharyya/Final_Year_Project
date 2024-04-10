@@ -33,30 +33,61 @@ const Appointments = ({ user }) => {
                     Authorization: `Bearer ${token}`
                 }
             });
+            const amount=response.data.fees * 100;
 
-            const razorpayLink = response.data.razorpayLink;
-            if (razorpayLink) {
-                window.open(razorpayLink, '_blank');
-                // Assuming there's an API to update appointment status after payment
-                await axios.patch(`http://localhost:9002/appointments/${appointmentId}`, { status: 'Paid' }, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
+            
+           
+                // Directly open Razorpay checkout for payment
+                const options = {
+                    key: 'rzp_test_X50Ftg7u2gTNyg',
+                    currency: 'INR',
+                    name: 'Medicare',
+                    description: 'Appointment Payment',
+                    amount: amount,
+                    prefill: {
+                        name: user.name,
+                        email: user.email,
+                        contact: user.phone,
+                    },
+                    notes: {
+                        appointmentId: appointmentId
+                    },
+                    theme: {
+                        color: '#3399cc'
+                    },
+                    handler: async function (response) {
+                        try {
+                            // Handle successful payment
+                            console.log('Payment successful:', response);
+                            
+                            window.location.reload();
+                        } catch (error) {
+                            console.error('Error processing payment:', error);
+                        }
+                    },
+                    modal: {
+                        ondismiss: function () {
+                           
+                            console.log('Payment modal closed');
+                        }
+                    },
+                    webhook: {
+                        url: 'https://fe4b-202-8-112-195.ngrok-free.app/webhook',
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        data: {
+                            appointmentId: appointmentId
+                        }
                     }
-                });
-                // Update appointment status locally
-                const updatedAppointments = appointments.map(appointment => {
-                    if (appointment._id === appointmentId) {
-                        return { ...appointment, status: 'Paid' };
-                    }
-                    
-                    return appointment;
-                });
-                setAppointments(updatedAppointments);
+                };
+                const rzp = new window.Razorpay(options);
+                rzp.open();
+                
+                
                
-            } else {
-                console.error('Razorpay link not found for the doctor');
-                alert('Payment link is not available for this doctor.');
-            }
+           
         } catch (error) {
             console.error('Error fetching doctor details:', error);
             alert('An error occurred while fetching doctor details.');
@@ -95,6 +126,12 @@ const Appointments = ({ user }) => {
 };
 
 export default Appointments;
+
+
+
+
+
+
 
 
 
