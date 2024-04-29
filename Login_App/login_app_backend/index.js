@@ -8,7 +8,7 @@ import jwt from "jsonwebtoken";
 import { Server } from "socket.io"; 
 import http from "http";
 import crypto from 'crypto';
-
+import path from 'path'; 
 import multer from "multer"; 
 import axios from 'axios';
 const app = express();
@@ -134,6 +134,7 @@ const generateToken = (userId) => {
 //chat
 // WebSocket connection handling
 
+
 io.on('connection', (socket) => {
     console.log('A user connected');
   
@@ -170,25 +171,29 @@ io.on('connection', (socket) => {
     });
     // Event listener for sendMessage
 // Event listener for sendMessage
+// Event listener for sendMessage
 socket.on('sendMessage', async ({ userId, doctorId, content }) => {
     try {
+        console.log("Received sendMessage event");
+
         // Determine senderId based on whether the user sending the message is the current user or the doctor
         const senderId = userId === socket.handshake.query.userId ? userId : doctorId;
-        console.log("This is Socket:",socket.handshake.query.userId );
-        console.log("sender:",senderId);
+        console.log("senderId:", senderId);
+
         // Save the message to the database with the correct senderId
         const message = new Message({ userId, doctorId, content, senderId });
         await message.save();
 
-        // Emit the message to the doctor's room
-        io.emit('message', message);
-        console.log(message);
-        // If you want to send the message back to the sender as well, you can emit it to the sender's room
+        // Emit the message only to the sender's socket
         socket.emit('message', message);
+        
+
+        console.log("Message emitted:", message);
     } catch (error) {
         console.error('Error saving message:', error);
     }
 });
+
 
   
   
@@ -472,12 +477,11 @@ app.delete('/appointments/:id/done', authenticateUser, async (req, res) => {
 });
 
 
-  // Add route to check appointment status
-  app.get('/check-appointment/:doctorId/:userId', authenticateUser, async (req, res) => {
+app.get('/check-appointment/:doctorId/:userId', authenticateUser, async (req, res) => {
     try {
         const { doctorId, userId } = req.params;
         
-        // Fetch appointment details from the database based on the provided doctor ID and user ID
+        // Fetch any existing appointment details from the database based on the provided doctor ID and user ID
         const appointment = await Appointment.findOne({ doctorId, userId });
 
         // Check if appointment exists
@@ -485,13 +489,21 @@ app.delete('/appointments/:id/done', authenticateUser, async (req, res) => {
             return res.status(404).json({ message: "Appointment not found for this doctor and user" });
         }
 
-        // If appointment exists, return the appointment details
-        res.json(appointment);
+        // If appointment exists, check if it's active
+        if (appointment.status !== 'Done' && appointment.status !== 'Cancelled') {
+            // If appointment is not completed or cancelled, it's considered active
+            return res.json(appointment);
+        }
+
+        // If appointment is completed or cancelled, it's not considered active
+        return res.status(404).json({ message: "Active appointment not found for this doctor and user" });
+
     } catch (error) {
         console.error('Error checking appointment status:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
+
 
 
 
@@ -598,7 +610,7 @@ app.put('/appointments/:id', authenticateUser, async (req, res) => {
 });
 
 // Function to verify Razorpay webhook signature
-// Function to verify webhook signature
+
 const verifyWebhookSignature = (payload, signature, secret) => {
     const generatedSignature = crypto.createHmac('sha256', secret).update(payload).digest('hex');
     return generatedSignature === signature;

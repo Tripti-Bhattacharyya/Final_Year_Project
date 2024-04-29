@@ -12,28 +12,33 @@
     flex-grow: 1; /* Allow messages to grow and fill remaining space */
     overflow-y: auto; /* Enable vertical scrolling for overflow */
     padding: 10px;
+  
 }
 
 .message {
     margin-bottom: 10px;
     padding: 8px;
     border-radius: 8px;
-    max-width: 70%;
+    max-width: 50%;
+    word-wrap: break-word;
 }
 
 .message.left {
-    align-self: flex-start; /* Align left for messages sent by the user */
-    background-color: #e5e5ea; /* Light background color for user messages */
+    float:left;
+    clear: both;
+    background-color: #e5e5ea; 
 }
 
 .right {
-    align-self: flex-end; /* Align right for messages sent by others */
-    background-color: #007aff; /* Blue background color for other messages */
-    color: white; /* White text color for other messages */
+    float:right;
+    clear: both;
+    background-color: #007aff;
+    color: white; 
 }
 
 .message-content {
     margin-bottom: 4px;
+    
 }
 
 .message-timestamp {
@@ -65,6 +70,4 @@
     transition: background-color 0.3s ease;
 }
 
-.send-button:hover {
-    background-color: #0056b3; /* Darker shade on hover */
-}
+
