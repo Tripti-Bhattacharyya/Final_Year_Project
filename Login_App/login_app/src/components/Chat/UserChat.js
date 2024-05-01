@@ -45,19 +45,29 @@ const UserChat = (user) => {
                 socket.current.off('message');
             }
         };
-    }, [doctorId, userId, user.user]);
+    }, [doctorId, user.user]);
     
-
-   
-
     const handleMessageSend = () => {
-        if (newMessage.trim() === '') return;
-        socket.current.emit('sendMessage', { userId, doctorId, content: newMessage });
+        if (newMessage.trim() === '' && !file) return;
+    
+        const message = {
+            userId: userId,
+            doctorId: doctorId,
+            content: newMessage.trim() !== '' ? newMessage : null,
+            file: file ? {
+                name: file.name,
+                contentType: file.type,
+                data: file // Assuming file is already a Blob or File object
+            } : null
+        };
+    
+        socket.current.emit('sendMessage', message);
+    
         setNewMessage('');
-        // Focus the input field after sending the message
+        setFile(null);
         messageInputRef.current.focus();
     };
-
+    
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
         setFile(selectedFile);
@@ -67,13 +77,32 @@ const UserChat = (user) => {
         <div className="user-chat-container">
             <h2>Chat</h2>
             <div className="chat-messages">
-    {messages.map((message) => (
-        <div key={message._id} className={`message ${message.senderId === user.user ? 'left' : 'right'}`}>
-            <p className="message-content">{message.content}</p>
-            <span className="message-timestamp">{message.createdAt}</span>
-        </div>
-    ))}
-</div>
+            {messages.map((message) => (
+    <div key={message._id} className={`message ${message.senderId === user.user ? 'left' : 'right'}`}>
+        {message.fileName && message.fileData ? (
+            <div>
+                {message.contentType.startsWith('image') ? (
+                    <div>
+                        <p>Image: {message.fileName}</p>
+                        <img src={`data:${message.contentType};base64,${message.fileData}`} alt={message.fileName} style={{ maxWidth: '30%', maxHeight: '50%' }} />
+                    </div>
+                ) : (
+                    <div>
+                        <p>File: {message.fileName}</p>
+                        <a href={`data:${message.contentType};base64,${btoa(String.fromCharCode(...new Uint8Array(message.fileData.data)))}`} download={message.fileName}>Download</a>
+                    </div>
+                )}
+            </div>
+        ) : (
+            <div>
+                <p className="message-content">{message.content}</p>
+            </div>
+        )}
+        <span className="message-timestamp">{message.createdAt}</span>
+    </div>
+))}
+
+            </div>
 
             <div className="input-container">
                 <input
@@ -91,4 +120,9 @@ const UserChat = (user) => {
 };
 
 export default UserChat;
+
+
+
+
+
 

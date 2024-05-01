@@ -119,10 +119,14 @@ const appointmentSchema = new mongoose.Schema({
   const messageSchema = new mongoose.Schema({
     doctorId: { type: mongoose.Schema.Types.ObjectId, ref: 'Doctor' },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    senderId: { type: mongoose.Schema.Types.ObjectId }, 
-    content: String,
-  }, { timestamps: true });
-  const Message = mongoose.model('Message', messageSchema);
+    senderId: { type: mongoose.Schema.Types.ObjectId },
+    content: String, // For text messages
+    fileName: String, // For non-text messages
+    fileData: Buffer, // For non-text messages
+    contentType: String, // For non-text messages
+}, { timestamps: true });
+const Message = mongoose.model('Message', messageSchema);
+
   
   const storage = multer.memoryStorage(); // Store file data in memory instead of on disk
   const upload = multer({ storage: storage });
@@ -160,41 +164,66 @@ io.on('connection', (socket) => {
 
   
     // Event listener for getMessages
-    socket.on('getMessages', async ({ userId, doctorId }) => {
-      try {
-        const messages = await Message.find({ userId, doctorId }).sort({ createdAt: 'asc' }).exec();
-        socket.emit('messages', messages);
-        
-      } catch (error) {
-        console.error('Error fetching messages:', error);
-      }
-    });
-    // Event listener for sendMessage
-// Event listener for sendMessage
-// Event listener for sendMessage
-socket.on('sendMessage', async ({ userId, doctorId, content }) => {
+// Event listener for getMessages
+socket.on('getMessages', async ({ userId, doctorId }) => {
     try {
-        console.log("Received sendMessage event");
-
-        // Determine senderId based on whether the user sending the message is the current user or the doctor
-        const senderId = userId === socket.handshake.query.userId ? userId : doctorId;
-        console.log("senderId:", senderId);
-
-        // Save the message to the database with the correct senderId
-        const message = new Message({ userId, doctorId, content, senderId });
-        await message.save();
-
-        // Emit the message only to the sender's socket
-        socket.emit('message', message);
-        
-
-        console.log("Message emitted:", message);
+      const messages = await Message.find({ userId, doctorId }).sort({ createdAt: 'asc' }).exec();
+      // Convert fileData to base64 before sending
+      const messagesWithBase64 = messages.map(message => {
+        if (message.fileData) {
+          return {
+            ...message.toObject(),
+            fileData: message.fileData.toString('base64') // Convert Buffer to base64 string
+          };
+        } else {
+          return message;
+        }
+      });
+      socket.emit('messages', messagesWithBase64);
     } catch (error) {
-        console.error('Error saving message:', error);
+      console.error('Error fetching messages:', error);
     }
-});
+  });
+  
 
 
+    // Event listener for sendMessage
+    socket.on('sendMessage', async (formData) => {
+        try {
+            console.log("Received sendMessage event");
+    
+            // Extract data from formData
+            const userId = formData.userId;
+            const doctorId = formData.doctorId;
+            const content = formData.content;
+            const file = formData.file;
+    
+            // Determine senderId based on whether the user sending the message is the current user or the doctor
+            const senderId = userId === socket.handshake.query.userId ? userId : doctorId;
+    
+            // Save the message to the database with the correct senderId
+            let message;
+            if (content) {
+                message = new Message({ userId, doctorId, content, senderId });
+            } else if (file) {
+                const fileName = file.name;
+                const fileData = file.data;
+                const contentType = file.contentType; // Retrieve content type
+                message = new Message({ userId, doctorId, senderId, fileName, fileData, contentType });
+            }
+    
+            if (message) {
+                await message.save();
+                // Emit the message only to the sender's socket
+                socket.emit('message', message);
+                console.log("Message emitted:", message);
+            } else {
+                console.error('No content or file provided.');
+            }
+        } catch (error) {
+            console.error('Error saving message:', error);
+        }
+    });
   
   
     // Disconnect event
@@ -760,6 +789,13 @@ const PORT = process.env.PORT || 9002;
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+
+
+
+
+
+
 
 
 
