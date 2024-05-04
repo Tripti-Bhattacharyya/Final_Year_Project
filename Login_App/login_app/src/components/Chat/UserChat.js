@@ -70,7 +70,41 @@ const UserChat = (user) => {
     
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
-        setFile(selectedFile);
+        if (selectedFile) {
+            setFile(selectedFile);
+        }
+    };
+
+    const handleFileDownload = async (messageId, fileName) => {
+        try {
+            // Fetch the file data from the backend
+            const response = await fetch(`http://localhost:9002/files/${messageId}`);
+            
+            // Check if the response is successful
+            if (!response.ok) {
+                throw new Error('Failed to download file');
+            }
+            
+            // Convert the file data to a Blob object
+            const fileBlob = await response.blob();
+            
+            // Create a temporary URL for the file blob
+            const fileUrl = URL.createObjectURL(fileBlob);
+            
+            // Create a link element to trigger the file download
+            const link = document.createElement('a');
+            link.href = fileUrl;
+            link.download = fileName;
+            
+            // Trigger the click event to start the download
+            link.click();
+            
+            // Clean up by revoking the object URL
+            URL.revokeObjectURL(fileUrl);
+        } catch (error) {
+            console.error('Error downloading file:', error);
+            // Handle error appropriately (e.g., show error message to user)
+        }
     };
 
     return (
@@ -89,7 +123,7 @@ const UserChat = (user) => {
                 ) : (
                     <div>
                         <p>File: {message.fileName}</p>
-                        <a href={`data:${message.contentType};base64,${btoa(String.fromCharCode(...new Uint8Array(message.fileData.data)))}`} download={message.fileName}>Download</a>
+                        <button onClick={() => handleFileDownload(message._id, message.fileName)}>Download</button>
                     </div>
                 )}
             </div>

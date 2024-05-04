@@ -137,6 +137,28 @@ const generateToken = (userId) => {
 
 //chat
 // WebSocket connection handling
+// Example endpoint for serving files
+app.get('/files/:messageId', async (req, res) => {
+    const { messageId } = req.params;
+
+    try {
+        // Find the message by its ID
+        const message = await Message.findById(messageId);
+
+        if (!message) {
+            return res.status(404).send('Message not found');
+        }
+
+        // Set appropriate content type header
+        res.setHeader('Content-Type', message.contentType);
+
+        // Send the file data stored in the message buffer
+        res.send(message.fileData);
+    } catch (error) {
+        console.error('Error retrieving file from database:', error);
+        res.status(500).send('Internal server error');
+    }
+});
 
 
 io.on('connection', (socket) => {
@@ -187,43 +209,42 @@ socket.on('getMessages', async ({ userId, doctorId }) => {
   
 
 
-    // Event listener for sendMessage
-    socket.on('sendMessage', async (formData) => {
-        try {
-            console.log("Received sendMessage event");
-    
-            // Extract data from formData
-            const userId = formData.userId;
-            const doctorId = formData.doctorId;
-            const content = formData.content;
-            const file = formData.file;
-    
-            // Determine senderId based on whether the user sending the message is the current user or the doctor
-            const senderId = userId === socket.handshake.query.userId ? userId : doctorId;
-    
-            // Save the message to the database with the correct senderId
-            let message;
-            if (content) {
-                message = new Message({ userId, doctorId, content, senderId });
-            } else if (file) {
-                const fileName = file.name;
-                const fileData = file.data;
-                const contentType = file.contentType; // Retrieve content type
-                message = new Message({ userId, doctorId, senderId, fileName, fileData, contentType });
-            }
-    
-            if (message) {
-                await message.save();
-                // Emit the message only to the sender's socket
-                socket.emit('message', message);
-                console.log("Message emitted:", message);
-            } else {
-                console.error('No content or file provided.');
-            }
-        } catch (error) {
-            console.error('Error saving message:', error);
+socket.on('sendMessage', async (formData) => {
+    try {
+        // Extract data from formData
+        const { userId, doctorId, content, file } = formData;
+
+        // Determine senderId based on the sender
+        const senderId = userId === socket.handshake.query.userId ? userId : doctorId;
+
+        let message;
+        if (content) {
+            message = new Message({ userId, doctorId, content, senderId });
+        } else if (file) {
+            const fileName = file.name;
+            const fileData = file.data;
+            const contentType = file.contentType;
+            const fileExtension = path.extname(fileName).toLowerCase(); // Get file extension
+            message = new Message({ userId, doctorId, senderId, fileName, fileData, contentType, fileExtension });
         }
-    });
+
+        if (message) {
+            await message.save();
+            // Convert fileData to base64 before emitting
+            const messageWithBase64 = message.fileData ? {
+                ...message.toObject(),
+                fileData: message.fileData.toString('base64') // Convert Buffer to base64 string
+            } : message;
+            socket.emit('message', messageWithBase64);
+            console.log("Message emitted:", message);
+        } else {
+            console.error('No content or file provided.');
+        }
+    } catch (error) {
+        console.error('Error saving message:', error);
+    }
+});
+
   
   
     // Disconnect event
