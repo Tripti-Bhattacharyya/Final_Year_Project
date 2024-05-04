@@ -8,7 +8,7 @@ import jwt from "jsonwebtoken";
 import { Server } from "socket.io"; 
 import http from "http";
 import crypto from 'crypto';
-
+import path from 'path'; 
 import multer from "multer"; 
 import axios from 'axios';
 const app = express();
@@ -119,10 +119,14 @@ const appointmentSchema = new mongoose.Schema({
   const messageSchema = new mongoose.Schema({
     doctorId: { type: mongoose.Schema.Types.ObjectId, ref: 'Doctor' },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    senderId: { type: mongoose.Schema.Types.ObjectId }, 
-    content: String,
-  }, { timestamps: true });
-  const Message = mongoose.model('Message', messageSchema);
+    senderId: { type: mongoose.Schema.Types.ObjectId },
+    content: String, // For text messages
+    fileName: String, // For non-text messages
+    fileData: Buffer, // For non-text messages
+    contentType: String, // For non-text messages
+}, { timestamps: true });
+const Message = mongoose.model('Message', messageSchema);
+
   
   const storage = multer.memoryStorage(); // Store file data in memory instead of on disk
   const upload = multer({ storage: storage });
@@ -133,6 +137,29 @@ const generateToken = (userId) => {
 
 //chat
 // WebSocket connection handling
+// Example endpoint for serving files
+app.get('/files/:messageId', async (req, res) => {
+    const { messageId } = req.params;
+
+    try {
+        // Find the message by its ID
+        const message = await Message.findById(messageId);
+
+        if (!message) {
+            return res.status(404).send('Message not found');
+        }
+
+        // Set appropriate content type header
+        res.setHeader('Content-Type', message.contentType);
+
+        // Send the file data stored in the message buffer
+        res.send(message.fileData);
+    } catch (error) {
+        console.error('Error retrieving file from database:', error);
+        res.status(500).send('Internal server error');
+    }
+});
+
 
 io.on('connection', (socket) => {
     console.log('A user connected');
@@ -159,32 +186,60 @@ io.on('connection', (socket) => {
 
   
     // Event listener for getMessages
-    socket.on('getMessages', async ({ userId, doctorId }) => {
-      try {
-        const messages = await Message.find({ userId, doctorId }).sort({ createdAt: 'asc' }).exec();
-        socket.emit('messages', messages);
-        
-      } catch (error) {
-        console.error('Error fetching messages:', error);
-      }
-    });
-    // Event listener for sendMessage
-// Event listener for sendMessage
-socket.on('sendMessage', async ({ userId, doctorId, content }) => {
+// Event listener for getMessages
+socket.on('getMessages', async ({ userId, doctorId }) => {
     try {
-        // Determine senderId based on whether the user sending the message is the current user or the doctor
-        const senderId = userId === socket.handshake.query.userId ? userId : doctorId;
-        console.log("This is Socket:",socket.handshake.query.userId );
-        console.log("sender:",senderId);
-        // Save the message to the database with the correct senderId
-        const message = new Message({ userId, doctorId, content, senderId });
-        await message.save();
+      const messages = await Message.find({ userId, doctorId }).sort({ createdAt: 'asc' }).exec();
+      // Convert fileData to base64 before sending
+      const messagesWithBase64 = messages.map(message => {
+        if (message.fileData) {
+          return {
+            ...message.toObject(),
+            fileData: message.fileData.toString('base64') // Convert Buffer to base64 string
+          };
+        } else {
+          return message;
+        }
+      });
+      socket.emit('messages', messagesWithBase64);
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+    }
+  });
+  
 
-        // Emit the message to the doctor's room
-        io.emit('message', message);
-        console.log(message);
-        // If you want to send the message back to the sender as well, you can emit it to the sender's room
-        socket.emit('message', message);
+
+socket.on('sendMessage', async (formData) => {
+    try {
+        // Extract data from formData
+        const { userId, doctorId, content, file } = formData;
+
+        // Determine senderId based on the sender
+        const senderId = userId === socket.handshake.query.userId ? userId : doctorId;
+
+        let message;
+        if (content) {
+            message = new Message({ userId, doctorId, content, senderId });
+        } else if (file) {
+            const fileName = file.name;
+            const fileData = file.data;
+            const contentType = file.contentType;
+            const fileExtension = path.extname(fileName).toLowerCase(); // Get file extension
+            message = new Message({ userId, doctorId, senderId, fileName, fileData, contentType, fileExtension });
+        }
+
+        if (message) {
+            await message.save();
+            // Convert fileData to base64 before emitting
+            const messageWithBase64 = message.fileData ? {
+                ...message.toObject(),
+                fileData: message.fileData.toString('base64') // Convert Buffer to base64 string
+            } : message;
+            socket.emit('message', messageWithBase64);
+            console.log("Message emitted:", message);
+        } else {
+            console.error('No content or file provided.');
+        }
     } catch (error) {
         console.error('Error saving message:', error);
     }
@@ -472,12 +527,11 @@ app.delete('/appointments/:id/done', authenticateUser, async (req, res) => {
 });
 
 
-  // Add route to check appointment status
-  app.get('/check-appointment/:doctorId/:userId', authenticateUser, async (req, res) => {
+app.get('/check-appointment/:doctorId/:userId', authenticateUser, async (req, res) => {
     try {
         const { doctorId, userId } = req.params;
         
-        // Fetch appointment details from the database based on the provided doctor ID and user ID
+        // Fetch any existing appointment details from the database based on the provided doctor ID and user ID
         const appointment = await Appointment.findOne({ doctorId, userId });
 
         // Check if appointment exists
@@ -485,13 +539,21 @@ app.delete('/appointments/:id/done', authenticateUser, async (req, res) => {
             return res.status(404).json({ message: "Appointment not found for this doctor and user" });
         }
 
-        // If appointment exists, return the appointment details
-        res.json(appointment);
+        // If appointment exists, check if it's active
+        if (appointment.status !== 'Done' && appointment.status !== 'Cancelled') {
+            // If appointment is not completed or cancelled, it's considered active
+            return res.json(appointment);
+        }
+
+        // If appointment is completed or cancelled, it's not considered active
+        return res.status(404).json({ message: "Active appointment not found for this doctor and user" });
+
     } catch (error) {
         console.error('Error checking appointment status:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
+
 
 
 
@@ -598,7 +660,7 @@ app.put('/appointments/:id', authenticateUser, async (req, res) => {
 });
 
 // Function to verify Razorpay webhook signature
-// Function to verify webhook signature
+
 const verifyWebhookSignature = (payload, signature, secret) => {
     const generatedSignature = crypto.createHmac('sha256', secret).update(payload).digest('hex');
     return generatedSignature === signature;
@@ -748,6 +810,13 @@ const PORT = process.env.PORT || 9002;
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+
+
+
+
+
+
 
 
 

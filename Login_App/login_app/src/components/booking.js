@@ -1,4 +1,3 @@
-// Booking.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
@@ -10,6 +9,7 @@ const Booking = ({ user }) => {
   const [bookingStatus, setBookingStatus] = useState('');
   const [appointmentId, setAppointmentId] = useState('');
   const [isBooking, setIsBooking] = useState(false);
+  
   useEffect(() => {
     const checkAppointmentStatus = async () => {
       try {
@@ -20,10 +20,9 @@ const Booking = ({ user }) => {
           }
         });
 
-        // Check if appointments are found
-        if (response.status === 200 && response.data.length > 0) {
+        if (response.status === 200 && response.data) {
           setBookingStatus('Already Booked');
-          setAppointmentId(response.data[0]._id); // Assuming only one appointment is retrieved
+          setAppointmentId(response.data._id); // Assuming only one appointment is retrieved
         } else {
           setBookingStatus('');
         }
@@ -40,7 +39,6 @@ const Booking = ({ user }) => {
 
     checkAppointmentStatus();
   }, [doctorId]);
-  // Function to handle booking logic
 
   const handleBooking = async () => {
     if (isBooking) return; // Prevent multiple bookings
@@ -76,10 +74,9 @@ const Booking = ({ user }) => {
         setBookingStatus('Error processing appointment');
       }
     } finally {
-      setIsBooking(true); // Release the lock
+      setIsBooking(false); // Release the lock
     }
   };
-  
 
   return (
     <div>
@@ -93,7 +90,6 @@ const Booking = ({ user }) => {
         <option value="10:00 AM">10:00 AM</option>
         <option value="11:00 AM">11:00 AM</option>
         <option value="12:00 AM">12:00 AM</option>
-       
       </select>
       <button onClick={handleBooking}>
         {bookingStatus === 'Already Booked' ? 'Cancel' : 'Book'}
@@ -104,6 +100,7 @@ const Booking = ({ user }) => {
 };
 
 export default Booking;
+
 
 
 
