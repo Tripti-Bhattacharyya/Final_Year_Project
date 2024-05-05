@@ -57,7 +57,7 @@ const UserChat = (user) => {
             file: file ? {
                 name: file.name,
                 contentType: file.type,
-                data: file
+                data: file 
             } : null
         };
     
