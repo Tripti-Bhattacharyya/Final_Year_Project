@@ -116,7 +116,7 @@ const UserChat = (user) => {
             URL.revokeObjectURL(fileUrl);
         } catch (error) {
             console.error('Error downloading file:', error);
-            // Handle error appropriately (e.g., show error message to user)
+            
         }
     };
     const toggleEmojiPicker = () => {
