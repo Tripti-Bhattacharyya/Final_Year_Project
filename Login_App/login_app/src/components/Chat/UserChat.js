@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import io from 'socket.io-client';
-import './UserChat.css'; // Import CSS file
+import './UserChat.css'; 
 
 const UserChat = (user) => {
     console.log(user.user);
@@ -75,6 +75,16 @@ const UserChat = (user) => {
         }
     };
 
+    const formatTimestamp = (timestamp) => {
+        const date = new Date(timestamp);
+        const formattedDate = `${date.getDate().toString().padStart(2, '0')}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getFullYear()}`;
+        const hours = date.getHours();
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        const formattedTime = `${hours % 12 || 12}:${minutes} ${ampm}`;
+        return `${formattedDate} ${formattedTime}`;
+    };
+
     const handleFileDownload = async (messageId, fileName) => {
         try {
             // Fetch the file data from the backend
@@ -111,31 +121,30 @@ const UserChat = (user) => {
         <div className="user-chat-container">
             <h2>Chat</h2>
             <div className="chat-messages">
-            {messages.map((message) => (
-    <div key={message._id} className={`message ${message.senderId === user.user ? 'left' : 'right'}`}>
-        {message.fileName && message.fileData ? (
-            <div>
-                {message.contentType.startsWith('image') ? (
-                    <div>
-                        <p>Image: {message.fileName}</p>
-                        <img src={`data:${message.contentType};base64,${message.fileData}`} alt={message.fileName} style={{ maxWidth: '30%', maxHeight: '50%' }} />
+                {messages.map((message) => (
+                    <div key={message._id} className={`message ${message.senderId === user.user ? 'left' : 'right'}`}>
+                        {message.fileName && message.fileData ? (
+                            <div>
+                                {message.contentType.startsWith('image') ? (
+                                    <div>
+                                       
+                                        <img src={`data:${message.contentType};base64,${message.fileData}`} alt={message.fileName} style={{ maxWidth: '30%', maxHeight: '50%' }} />
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <p>{message.fileName}</p>
+                                        <button onClick={() => handleFileDownload(message._id, message.fileName)}>Download</button>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <div>
+                                <p className="message-content">{message.content}</p>
+                            </div>
+                        )}
+                        <span className="message-timestamp">{formatTimestamp(message.createdAt)}</span>
                     </div>
-                ) : (
-                    <div>
-                        <p>File: {message.fileName}</p>
-                        <button onClick={() => handleFileDownload(message._id, message.fileName)}>Download</button>
-                    </div>
-                )}
-            </div>
-        ) : (
-            <div>
-                <p className="message-content">{message.content}</p>
-            </div>
-        )}
-        <span className="message-timestamp">{message.createdAt}</span>
-    </div>
-))}
-
+                ))}
             </div>
 
             <div className="input-container">
@@ -144,16 +153,21 @@ const UserChat = (user) => {
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                     ref={messageInputRef}
-                    className="message-input"
+                    className="message-input" placeholder='Type your message here....'
                 />
-                <input type="file" onChange={handleFileChange} />
-                <button onClick={handleMessageSend} className="send-button">Send</button>
+               
+               <label className="file-label">
+                    <input type="file" onChange={handleFileChange} className="file-input" />
+                    <span className="file-icon">&#128206;</span> {/* Unicode for paperclip icon */}
+                </label>
+                <button onClick={handleMessageSend} className="send-button"><i className="fa fa-paper-plane"></i></button>
             </div>
         </div>
     );
 };
 
 export default UserChat;
+
 
 
 
