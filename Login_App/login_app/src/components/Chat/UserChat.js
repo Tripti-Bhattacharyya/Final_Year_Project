@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 import './UserChat.css'; 
 
+
 const UserChat = (user) => {
     console.log(user.user);
     const { userId, doctorId } = useParams();
@@ -12,6 +13,8 @@ const UserChat = (user) => {
     const socket = useRef(null); // Store socket instance in a ref
 
     const messageInputRef = useRef(null);
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const [selectedEmoji, setSelectedEmoji] = useState('');
 
     useEffect(() => {
         // Initialize socket connection only once
@@ -116,6 +119,21 @@ const UserChat = (user) => {
             // Handle error appropriately (e.g., show error message to user)
         }
     };
+    const toggleEmojiPicker = () => {
+        setShowEmojiPicker(prevState => !prevState);
+    };
+    
+    const handleEmojiClick = (emoji) => {
+        setSelectedEmoji(emoji);
+        setNewMessage(prevMessage => prevMessage + emoji);
+    };
+    // Emojis array
+const emojis = [
+    "😊", "❤️", "😂", "😍", "😎", "👍", "👋", "🤔", "🎉", "🔥",
+    "🥳", "😇", "😘", "🥰", "😋", "🤩", "💪", "🌟", "🌈", "💖", 
+   
+];
+
 
     return (
         <div className="user-chat-container">
@@ -146,22 +164,33 @@ const UserChat = (user) => {
                     </div>
                 ))}
             </div>
-
             <div className="input-container">
-                <input
-                    type="text"
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    ref={messageInputRef}
-                    className="message-input" placeholder='Type your message here....'
-                />
-               
-               <label className="file-label">
-                    <input type="file" onChange={handleFileChange} className="file-input" />
-                    <span className="file-icon">&#128206;</span> {/* Unicode for paperclip icon */}
-                </label>
-                <button onClick={handleMessageSend} className="send-button"><i className="fa fa-paper-plane"></i></button>
+            
+        <button onClick={toggleEmojiPicker} className="emoji-button">&#x1F60A;</button> {/* Smiley icon */}
+        {showEmojiPicker && (
+            <div className="emoji-picker">
+                {emojis.map((emoji, index) => (
+                    <span key={index} onClick={() => handleEmojiClick(emoji)}>{emoji}</span>
+                ))}
             </div>
+        )}
+    
+    <input
+        type="text"
+        value={newMessage}
+        onChange={(e) => setNewMessage(e.target.value)}
+        ref={messageInputRef}
+        className="message-input"
+        placeholder='Type your message here....'
+    />
+   
+    <label className="file-label">
+        <input type="file" onChange={handleFileChange} className="file-input" />
+        <span className="file-icon">&#128206;</span> {/* Unicode for paperclip icon */}
+    </label>
+    <button onClick={handleMessageSend} className="send-button"><i className="fa fa-paper-plane"></i></button>
+</div>
+
         </div>
     );
 };

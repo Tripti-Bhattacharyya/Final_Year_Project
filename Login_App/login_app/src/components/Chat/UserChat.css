@@ -73,7 +73,7 @@ body {
     text-align: center;
     font-size: 15px;
     font-weight: 500;
-    color: antiquewhite;
+   
 }
 
 .send-button {
@@ -103,4 +103,35 @@ body {
     font-size: 25px;
     cursor: pointer;
     color: #111010;
+}
+
+.emoji-button {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 20px;
+    color: #f8f4f4;
+    border: 2px solid white;
+    border-radius: 50%; 
+    padding: 0px;
+    background-color: #ffffff; 
+    
+}
+.emoji-picker span {
+    cursor: pointer;
+    
+}
+.emoji-picker {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    bottom: calc(100% + 5px); 
+    left: 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px;
+    z-index: 0.7; 
 }
