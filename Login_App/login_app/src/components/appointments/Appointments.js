@@ -108,6 +108,7 @@ const Appointments = ({ user }) => {
 
     return (
         <div className="appointments-container">
+            
             <h2 className='heading'>Your Appointments</h2>
             <ul className="appointments-list">
                 {appointments.map(appointment => (

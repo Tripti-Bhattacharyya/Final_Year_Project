@@ -48,7 +48,7 @@ const DoctorList = () => {
       <form  className='search-bar' onSubmit={handleSearchSubmit}>
         <input
           type="text"
-          placeholder="Search by name"
+          placeholder="Search"
           value={searchQuery}
           onChange={handleSearchChange}
         />

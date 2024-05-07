@@ -1,5 +1,7 @@
 .doc-container{
-    background-color: rgb(218, 221, 247);
+  background-image:  url('../../Images/ApplyDoctor.jpg'); 
+  background-size: cover;
+  background-position: center;
     overflow-y: auto;
 }
 
@@ -20,24 +22,33 @@
     width: 400px;
     box-sizing: border-box; 
     background-color: #b2d6fa;
+    transition: transform 0.3s ease, box-shadow 0.3s ease; 
+  }
+  .list:hover{
+    transform: translate(-5px, 5px); 
+    box-shadow: -10px 10px 20px rgba(0, 0, 0, 0.2); 
+    
   }
   .doc-heading{
-    top: 0px;
+    top: 5px;
     position: sticky;
     text-align: center;
-    text-decoration: underline;
+    color: #031f3d;
   }
   .search-bar{
     top: 40px;
     position: sticky;
     text-align: center;
     margin-top:10px;
+   
   }
   .image {
     width: 100px;
     height: 100px;
     border-radius: 50%;
+    border: 2px solid white;
     margin-bottom: 10px;
+    
   }
   
   .link {
@@ -52,6 +63,7 @@
   
   .link:hover {
     background-color: #0056b3;
+
   }
   
   form {
