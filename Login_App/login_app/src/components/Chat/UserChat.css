@@ -11,7 +11,8 @@
     justify-content: center;
     height: 90%;
     width: 100%;
-    background-color: #e2dfdf;
+    background-image: url(../../Images/Chat.jpg);
+   
 }
 
 .chat-messages {
@@ -20,6 +21,7 @@
     padding: 10px;
     
 }
+
 
 .message {
     margin-bottom: 10px;
@@ -32,13 +34,13 @@
 .message.left {
     float: left;
     clear: both;
-    background-color: #b0b0b3;
+    background-color: #3dac62;
 }
 
 .right {
     float: right;
     clear: both;
-    background-color: #007aff;
+    background-color: #951ef7;
     color: white;
 }
 
@@ -57,7 +59,7 @@
 
 .message-timestamp {
     font-size: 12px;
-    color: #111010;
+    color: #030303;
 }
 
 .right .message-timestamp {
@@ -67,26 +69,30 @@
 .input-container {
     display: flex;
     align-items: center;
+    justify-content: center; 
     position: relative;
     margin-right: 15px;
+    margin-top: auto; 
+   
+    
 }
 
 .message-input {
-    flex-grow: 1;
+    width: 900px;
     margin-right: 10px;
     padding: 8px;
     margin-left: 5px;
     border: 1px solid #ccc;
-    border-radius: 25px;
+    border-radius: 55px;
     text-align: center;
     font-size: 15px;
     font-weight: 500;
-  
+
 }
 
 .send-button {
     padding: 8px 16px;
-    background-color: #007aff;
+    background-color: #af29fd;
     color: white;
     border: none;
     border-radius: 35px;
@@ -96,7 +102,7 @@
 
 .file-label {
     position: absolute;
-    right: 70px; 
+    right: 280px; 
     top: 40%;
     transform: translateY(-50%);
     cursor: pointer;
@@ -110,12 +116,12 @@
 .file-icon {
     font-size: 25px;
     cursor: pointer;
-    color: #111010;
+   
 }
 
 .emoji-button {
     position: absolute;
-    left: 10px;
+    left: 205px;
     top: 50%;
     transform: translateY(-50%);
     cursor: pointer;
@@ -135,7 +141,7 @@
     display: flex;
     flex-direction: column;
     position: absolute;
-    bottom: calc(100% + 5px); 
+    bottom: 5px; 
     left: 0;
     background-color: #fff;
     border: 1px solid #ccc;

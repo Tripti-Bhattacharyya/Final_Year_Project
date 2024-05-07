@@ -40,11 +40,12 @@ const DoctorList = () => {
     }
   };
 
+  
   return (
-    <div>
-      <h2>Available Doctors</h2>
-      {/* Search form */}
-      <form onSubmit={handleSearchSubmit}>
+    <div className='doc-container'>
+      <h2 className='doc-heading'>Available Doctors</h2>
+     
+      <form  className='search-bar' onSubmit={handleSearchSubmit}>
         <input
           type="text"
           placeholder="Search by name"
