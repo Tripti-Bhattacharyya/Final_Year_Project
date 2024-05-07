@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
+import './Appointments.css';
 const Appointments = ({ user }) => {
     const [appointments, setAppointments] = useState([]);
     const navigate = useNavigate();
@@ -94,6 +94,12 @@ const Appointments = ({ user }) => {
         }
     };
 
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const formattedDate = `${date.getDate().toString().padStart(2, '0')}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getFullYear()}`;
+        return formattedDate;
+    };
+
     const handleChat = (doctorId) => {
         console.log('Chat button clicked');
         navigate(`/chat/${doctorId}/${user._id}`);
@@ -101,23 +107,27 @@ const Appointments = ({ user }) => {
     
 
     return (
-        <div>
-            <h2>Your Appointments</h2>
-            <ul>
+        <div className="appointments-container">
+            
+            <h2 className='heading'>Your Appointments</h2>
+            <ul className="appointments-list">
                 {appointments.map(appointment => (
-                    <li key={appointment._id}>
-                        Doctor: {appointment.doctorId.name}, Date: {appointment.date}, Time: {appointment.timeSlot}, Status: {appointment.status}
+                    <li key={appointment._id} className="appointment-item">
+                        <div className='items-list'>
+                            <span className="doctor-name">Doctor: {appointment.doctorId.name}</span>
+                            <span className="appointment-details">Date:{formatDate(appointment.date)}, Time: {appointment.timeSlot}</span>
+                            <span className="appointment-status">Status: {appointment.status}</span>
+                        </div>
                         {appointment.status === "Approved" && (
-                            <div>
-                                <button onClick={() => handlePayment(appointment.doctorId._id, appointment._id)}>Proceed to Payment</button>
-                               
-
+                            <div className="action-buttons">
+                                <button className="payment-button" onClick={() => handlePayment(appointment.doctorId._id, appointment._id)}>Proceed to Payment</button>
                             </div>
                         )}
                         {appointment.status === "Paid" && (
-                                    <button onClick={() => handleChat(appointment.doctorId._id)}>Start Chat</button>
-
-                            )}
+                            <div className="action-buttons">
+                                <button className="chat-button" onClick={() => handleChat(appointment.doctorId._id)}>Start Chat</button>
+                            </div>
+                        )}
                     </li>
                 ))}
             </ul>

@@ -3,7 +3,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #5265c4;
+  background: #122999;
   width: 100vw;
 }
 
@@ -24,7 +24,7 @@ a{
 
 
 
-a::before {
+.nav-items ::before {
   content: "";
   position: absolute;
   left: 0;
@@ -45,14 +45,13 @@ a:hover::before {
 .Nav > .nav-items {
 
   
-  display: flex;          /* Make it a flex container */
-  flex-direction: row;   /* Align items horizontally */
+  display: flex;          
+  flex-direction: row;  
   
-
 }
 
 .Nav > .nav-items > * {
-  margin: 15px; /* Adjusted margin for all items within .nav-items */
+  margin: 15px; 
 }
 
 

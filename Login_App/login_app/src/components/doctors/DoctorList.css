@@ -1,25 +1,94 @@
+.doc-container{
+  background-image:  url('../../Images/ApplyDoctor.jpg'); 
+  background-size: cover;
+  background-position: center;
+    overflow-y: auto;
+}
 
-.d_list{
+.d_list {
+    list-style-type: none;
+    padding: 0;
+    justify-content: space-between;
     display: flex;
-    flex-direction: row;
-    list-style: none;
-}
-.list{
+    flex-wrap: wrap;
+  }
+  
+  .list {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 20px;
+    box-shadow: 5px 5px rgb(182, 187, 190);
     padding: 10px;
-    margin: 5px;
-    width: 250px;
-    height: 320px;
-    border: 2px solid red;
-}
-.image{
-    height: 200px;
-    width: 200px;
-}
-.link{
-    color: black;
+    width: 400px;
+    box-sizing: border-box; 
+    background-color: #b2d6fa;
+    transition: transform 0.3s ease, box-shadow 0.3s ease; 
+  }
+  .list:hover{
+    transform: translate(-5px, 5px); 
+    box-shadow: -10px 10px 20px rgba(0, 0, 0, 0.2); 
     
-}
-.link:hover{
-    color: rgb(243, 1, 203);
+  }
+  .doc-heading{
+    top: 5px;
+    position: sticky;
+    text-align: center;
+    color: #031f3d;
+  }
+  .search-bar{
+    top: 40px;
+    position: sticky;
+    text-align: center;
+    margin-top:10px;
+   
+  }
+  .image {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 2px solid white;
+    margin-bottom: 10px;
+    
+  }
+  
+  .link {
+    display: inline-block;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    
+  }
+  
+  .link:hover {
+    background-color: #0056b3;
 
-}
+  }
+  
+  form {
+    margin-bottom: 20px;
+  }
+  
+  input[type="text"] {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    margin-right: 10px;
+  }
+  
+  button[type="submit"] {
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    
+  }
+  
+  button[type="submit"]:hover {
+    background-color: #0056b3;
+  }
+  
+  

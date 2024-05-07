@@ -137,21 +137,21 @@ const emojis = [
 
     return (
         <div className="user-chat-container">
-            <h2>Chat</h2>
+           
             <div className="chat-messages">
                 {messages.map((message) => (
                     <div key={message._id} className={`message ${message.senderId === user.user ? 'left' : 'right'}`}>
                         {message.fileName && message.fileData ? (
                             <div>
                                 {message.contentType.startsWith('image') ? (
-                                    <div>
+                                    <div className='img-div'>
                                        
-                                        <img src={`data:${message.contentType};base64,${message.fileData}`} alt={message.fileName} style={{ maxWidth: '30%', maxHeight: '50%' }} />
+                                        <img className='img-class' src={`data:${message.contentType};base64,${message.fileData}`} alt={message.fileName}/>
                                     </div>
                                 ) : (
-                                    <div>
+                                    <div className='file-class'>
                                         <p>{message.fileName}</p>
-                                        <button onClick={() => handleFileDownload(message._id, message.fileName)}>Download</button>
+                                        <button  className='btn' onClick={() => handleFileDownload(message._id, message.fileName)}>Download</button>
                                     </div>
                                 )}
                             </div>
