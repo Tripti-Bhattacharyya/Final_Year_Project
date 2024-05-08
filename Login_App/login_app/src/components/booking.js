@@ -25,14 +25,14 @@ const Booking = ({ user }) => {
 
         if (response.status === 200 && response.data) {
           setBookingStatus('Already Booked');
-          setAppointmentId(response.data._id); // Assuming only one appointment is retrieved
-          // Show notification for already booked appointment
+          setAppointmentId(response.data._id); 
+          
           toast.error('Already Booked');
         }  else {
           setBookingStatus('');
         }
       } catch (error) {
-        // Handle 404 error specifically
+       
         if (error.response && error.response.status === 404) {
           setBookingStatus('');
         } else {
@@ -46,8 +46,8 @@ const Booking = ({ user }) => {
   }, [doctorId]);
 
   const handleBooking = async () => {
-    if (isBooking) return; // Prevent multiple bookings
-    setIsBooking(true); // Lock the booking process
+    if (isBooking) return; 
+    setIsBooking(true); 
   
     try {
       const token = localStorage.getItem('token');
@@ -81,7 +81,7 @@ const Booking = ({ user }) => {
         setBookingStatus('Error processing appointment');
       }
 
-      // Show error notification
+      
       toast.error(bookingStatus);
     } finally {
       setIsBooking(false); // Release the lock

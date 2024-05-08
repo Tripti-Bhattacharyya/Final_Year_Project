@@ -128,13 +128,13 @@ const DocRegister = () => {
           <option value="">Select Start Time</option>
           <option value="9:00 AM">9:00 AM</option>
           <option value="1:00 PM">1:00 PM</option>
-          {/* Add more options as needed */}
+         
         </select>
         <select value={doctor.timeslots.monday.end} onChange={(e) => handleChange(e)} name="monday_end">
           <option value="">Select End Time</option>
           <option value="12:00 PM">12:00 PM</option>
           <option value="5:00 PM">5:00 PM</option>
-          {/* Add more options as needed */}
+         
         </select>
       </div>
       <div>
@@ -143,16 +143,16 @@ const DocRegister = () => {
           <option value="">Select Start Time</option>
           <option value="9:00 AM">9:00 AM</option>
           <option value="1:00 PM">1:00 PM</option>
-          {/* Add more options as needed */}
+         
         </select>
         <select value={doctor.timeslots.tuesday.end} onChange={(e) => handleChange(e)} name="tuesday_end">
           <option value="">Select End Time</option>
           <option value="12:00 PM">12:00 PM</option>
           <option value="5:00 PM">5:00 PM</option>
-          {/* Add more options as needed */}
+       
         </select>
       </div>
-      {/* Add more days as needed */}
+  
       
       <div className="button" onClick={registerDoctor}>
         Register as Doctor
