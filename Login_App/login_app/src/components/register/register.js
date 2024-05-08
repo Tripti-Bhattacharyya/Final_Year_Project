@@ -64,7 +64,7 @@ const Register = () => {
   return (
     <div className="register">
       <h1>Register</h1>
-      {/* Input fields for user registration */}
+      
       <input
         type="text"
         name="name"
