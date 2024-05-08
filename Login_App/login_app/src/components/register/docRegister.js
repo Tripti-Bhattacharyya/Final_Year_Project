@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const DocRegister = () => {
   const navigate = useNavigate();
@@ -63,20 +65,20 @@ const DocRegister = () => {
   };
 
   const registerDoctor = async () => {
-    const { name, email, password, specialization, degree, fees, razorpayLink,timeslots, photo,hospital } = doctor;
-
+    const { name, email, password, specialization, degree, fees, razorpayLink, timeslots, photo, hospital } = doctor;
+  
     // Check if any required field is empty
-    if (!name || !email || !password || !specialization || !degree || !fees || !razorpayLink|| !validateTimeslots(timeslots) || !photo || !hospital) {
-      alert("Please fill in all required fields and upload a photo");
+    if (!name || !email || !password || !specialization || !degree || !fees || !razorpayLink || !validateTimeslots(timeslots) || !photo || !hospital) {
+      toast.error("Please fill in all required fields and upload a photo");
       return;
     }
-
+  
     try {
       const existingDoctor = await axios.get(`http://localhost:9002/doctors?email=${email}`);
-    if (existingDoctor.data===email ) {
-      alert("Doctor with this email already exists");
-      return;
-    }
+      if (existingDoctor.data === email) {
+        toast.error("Doctor with this email already exists");
+        return;
+      }
       const formData = new FormData();
       formData.append("name", name);
       formData.append("email", email);
@@ -85,25 +87,25 @@ const DocRegister = () => {
       formData.append("degree", degree);
       formData.append("hospital", hospital);
       formData.append("fees", fees);
-      formData.append("razorpayLink", razorpayLink); 
-     
-
+      formData.append("razorpayLink", razorpayLink);
+  
       formData.append("timeslots", JSON.stringify(timeslots));
       formData.append("photo", photo);
-
+  
       const response = await axios.post("http://localhost:9002/register/doctor", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-
-      alert(response.data.message);
+  
+      toast.success(response.data.message);
       navigate("/login");
     } catch (error) {
       console.error("Doctor registration error:", error);
-      alert("An error occurred during registration");
+      toast.error("An error occurred during registration");
     }
   };
+  
 
   return (
     <div className="doc-register">

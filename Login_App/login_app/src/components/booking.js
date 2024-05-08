@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import './booking.css';
 
 const Booking = ({ user }) => {
   const { doctorId } = useParams();
@@ -23,7 +26,9 @@ const Booking = ({ user }) => {
         if (response.status === 200 && response.data) {
           setBookingStatus('Already Booked');
           setAppointmentId(response.data._id); // Assuming only one appointment is retrieved
-        } else {
+          // Show notification for already booked appointment
+          toast.error('Already Booked');
+        }  else {
           setBookingStatus('');
         }
       } catch (error) {
@@ -52,7 +57,7 @@ const Booking = ({ user }) => {
             Authorization: `Bearer ${token}`
           }
         });
-        setBookingStatus('Appointment Cancelled');
+        toast.success('Appointment Cancelled');
         setAppointmentId(null);
       } else {
         const response = await axios.post(`http://localhost:9002/book-appointment/${doctorId}`, {
@@ -65,7 +70,9 @@ const Booking = ({ user }) => {
         });
         setAppointmentId(response.data.appointmentId);
         setBookingStatus(response.data.message);
+        toast.success('Appointment Booked Successfully');
       }
+     
     } catch (error) {
       if (error.response && error.response.status === 400 && error.response.data.message === 'The selected time slot is already booked') {
         setBookingStatus('The selected time slot is already booked');
@@ -73,28 +80,35 @@ const Booking = ({ user }) => {
         console.error('Error booking or cancelling appointment:', error);
         setBookingStatus('Error processing appointment');
       }
+
+      // Show error notification
+      toast.error(bookingStatus);
     } finally {
       setIsBooking(false); // Release the lock
     }
   };
 
   return (
-    <div>
-      <h2>Book Appointment</h2>
-      <label>Select Date:</label>
-      <input type="date" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} />
-      <label>Select Time Slot:</label>
-      <select value={selectedTimeSlot} onChange={(e) => setSelectedTimeSlot(e.target.value)}>
-        <option value="select time">select time</option>
-        <option value="9:00 AM">9:00 AM</option>
-        <option value="10:00 AM">10:00 AM</option>
-        <option value="11:00 AM">11:00 AM</option>
-        <option value="12:00 AM">12:00 AM</option>
-      </select>
-      <button onClick={handleBooking}>
-        {bookingStatus === 'Already Booked' ? 'Cancel' : 'Book'}
-      </button>
-      {bookingStatus && <p>{bookingStatus}</p>}
+    <div className='booking-wrapper'>
+      <div className="booking-container">
+        <h2 className="booking-title">Book Appointment</h2>
+        <div className="booking-form">
+          <label className="booking-label">Select Date:</label>
+          <input type="date" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} className="booking-input" />
+          <label className="booking-label">Select Time Slot:</label>
+          <select value={selectedTimeSlot} onChange={(e) => setSelectedTimeSlot(e.target.value)} className="booking-input">
+            <option value="select time">Select Time</option>
+            <option value="9:00 AM">9:00 AM</option>
+            <option value="10:00 AM">10:00 AM</option>
+            <option value="11:00 AM">11:00 AM</option>
+            <option value="12:00 AM">12:00 AM</option>
+          </select>
+          <button onClick={handleBooking} className="booking-button">
+            {bookingStatus === 'Already Booked' ? 'Cancel' : 'Book'}
+          </button>
+          
+        </div>
+      </div>
     </div>
   );
 };

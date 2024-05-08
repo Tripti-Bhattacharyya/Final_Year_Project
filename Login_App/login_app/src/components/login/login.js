@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './login.css';
 
 const Login = ({ setLoginUser }) => {
@@ -26,9 +28,10 @@ const Login = ({ setLoginUser }) => {
 
         // Redirect the user to the homepage
         history('/');
-
+        toast.success("Login Successful");
       } else {
-        alert(message); // Display the error message
+        // Display the error message as a toast
+        toast.error(message);
       }
     } catch (error) {
       console.error('Login error:', error);
@@ -48,6 +51,7 @@ const Login = ({ setLoginUser }) => {
 };
 
 export default Login;
+
 
 
 
