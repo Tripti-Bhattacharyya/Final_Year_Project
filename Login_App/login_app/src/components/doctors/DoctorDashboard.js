@@ -126,7 +126,7 @@ const DoctorDashboard = () => {
 
   return (
     <div className="doctor-dashboard-container">
-    <h1 className='doc-heading'>Appointments</h1>
+    <h1 className='docdash-heading'>Appointments</h1>
     <ul className="appointment-list"> 
       {appointments.map(appointment => (
         <li key={appointment._id} className="appointment-item"> 

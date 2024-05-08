@@ -85,3 +85,8 @@
     margin-right: 10px; 
   }
  
+.docdash-heading{
+    position: relative;
+    text-align: center;
+    color: #031f3d;
+}
