@@ -1,6 +1,9 @@
 .booking-wrapper{
-    height: 100%;
-    width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
     background-image: linear-gradient(rgba(230, 227, 227, 0.6), rgba(198, 228, 252, 0.877)), url('../Images/Booking.jpg');
     background-size: cover;
     background-position: center;

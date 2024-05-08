@@ -28,10 +28,16 @@ const Login = ({ setLoginUser }) => {
 
         // Redirect the user to the homepage
         history('/');
-        toast.success("Login Successful");
+        toast.success("Login Successful", {
+          position: 'top-center',
+          autoClose: 3000
+        });
       } else {
         // Display the error message as a toast
-        toast.error(message);
+        toast.error(message, {
+          position: 'top-center',
+          autoClose: 3000
+        });
       }
     } catch (error) {
       console.error('Login error:', error);

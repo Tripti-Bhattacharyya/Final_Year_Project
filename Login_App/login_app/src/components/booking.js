@@ -27,12 +27,14 @@ const Booking = ({ user }) => {
           setBookingStatus('Already Booked');
           setAppointmentId(response.data._id); 
           
-          toast.error('Already Booked');
+          toast.error('Already Booked', {
+            position: 'top-center',
+            autoClose: 3000
+          });
         }  else {
           setBookingStatus('');
         }
       } catch (error) {
-       
         if (error.response && error.response.status === 404) {
           setBookingStatus('');
         } else {
@@ -57,9 +59,12 @@ const Booking = ({ user }) => {
             Authorization: `Bearer ${token}`
           }
         });
-        setAppointmentId(null);
-      setBookingStatus(''); // Reset booking status
-      toast.success('Appointment Cancelled');
+        setAppointmentId(''); 
+        setBookingStatus(''); 
+        toast.success('Appointment Cancelled', {
+          position: 'top-center',
+          autoClose: 3000
+        });
       } else {
         const response = await axios.post(`http://localhost:9002/book-appointment/${doctorId}`, {
           selectedDate,
@@ -71,7 +76,10 @@ const Booking = ({ user }) => {
         });
         setAppointmentId(response.data.appointmentId);
         setBookingStatus(response.data.message);
-        toast.success('Appointment Booked Successfully');
+        toast.success('Appointment Booked Successfully', {
+          position: 'top-center',
+          autoClose: 3000
+        });
       }
      
     } catch (error) {
@@ -82,12 +90,21 @@ const Booking = ({ user }) => {
         setBookingStatus('Error processing appointment');
       }
 
-      
-      toast.error(bookingStatus);
+      toast.error(bookingStatus, {
+        position: 'top-center',
+        autoClose: 3000
+      });
     } finally {
-      setIsBooking(false); // Release the lock
+      setIsBooking(false); 
     }
   };
+
+  useEffect(() => {
+    return () => {
+      localStorage.removeItem('bookingStatus');
+      localStorage.removeItem('appointmentId');
+    };
+  }, []);
 
   return (
     <div className='booking-wrapper'>
@@ -107,7 +124,6 @@ const Booking = ({ user }) => {
           <button onClick={handleBooking} className="booking-button">
             {bookingStatus === 'Already Booked' ? 'Cancel' : 'Book'}
           </button>
-          
         </div>
       </div>
     </div>
@@ -115,6 +131,7 @@ const Booking = ({ user }) => {
 };
 
 export default Booking;
+
 
 
 
