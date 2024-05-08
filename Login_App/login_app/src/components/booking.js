@@ -57,8 +57,9 @@ const Booking = ({ user }) => {
             Authorization: `Bearer ${token}`
           }
         });
-        toast.success('Appointment Cancelled');
         setAppointmentId(null);
+      setBookingStatus(''); // Reset booking status
+      toast.success('Appointment Cancelled');
       } else {
         const response = await axios.post(`http://localhost:9002/book-appointment/${doctorId}`, {
           selectedDate,
