@@ -36,7 +36,10 @@ const Register = () => {
       axios
         .post("http://localhost:9002/register", user)
         .then((res) => {
-          toast.success(res.data.message);
+          toast.success(res.data.message, {
+            position: 'top-center',
+            autoClose: 3000
+          });
           navigate("/login");
         })
         .catch((error) => {
@@ -44,7 +47,10 @@ const Register = () => {
           toast.error("An error occurred during registration");
         });
     } else {
-      toast.error("Invalid input");
+      toast.error("Invalid input", {
+        position: 'top-center',
+        autoClose: 3000
+      });
     }
   };
   

@@ -1,8 +1,11 @@
 .doc-container{
+  width: 100%;
+  height: 100%;
   background-image:  url('../../Images/ApplyDoctor.jpg'); 
   background-size: cover;
   background-position: center;
     overflow-y: auto;
+    z-index: 1;
 }
 
 .d_list {
@@ -21,7 +24,7 @@
     padding: 10px;
     width: 400px;
     box-sizing: border-box; 
-    background-color: #b2d6fa;
+    background-color: #8bc0f5;
     transition: transform 0.3s ease, box-shadow 0.3s ease; 
   }
   .list:hover{

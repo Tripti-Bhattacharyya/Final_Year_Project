@@ -69,14 +69,20 @@ const DocRegister = () => {
   
     // Check if any required field is empty
     if (!name || !email || !password || !specialization || !degree || !fees || !razorpayLink || !validateTimeslots(timeslots) || !photo || !hospital) {
-      toast.error("Please fill in all required fields and upload a photo");
+      toast.error("Please fill in all required fields and upload a photo", {
+        position: 'top-center',
+        autoClose: 3000
+      });
       return;
     }
   
     try {
       const existingDoctor = await axios.get(`http://localhost:9002/doctors?email=${email}`);
       if (existingDoctor.data === email) {
-        toast.error("Doctor with this email already exists");
+        toast.error("Doctor with this email already exists", {
+          position: 'top-center',
+          autoClose: 3000
+        });
         return;
       }
       const formData = new FormData();
@@ -98,7 +104,10 @@ const DocRegister = () => {
         },
       });
   
-      toast.success(response.data.message);
+      toast.success(response.data.message, {
+        position: 'top-center',
+        autoClose: 3000
+      });
       navigate("/login");
     } catch (error) {
       console.error("Doctor registration error:", error);
