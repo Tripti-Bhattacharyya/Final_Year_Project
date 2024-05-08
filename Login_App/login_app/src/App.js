@@ -11,6 +11,8 @@ import Booking from './components/booking';
 import Appointments from './components/appointments/Appointments';
 import DoctorChat from './components/Chat/DoctorChat';
 import UserChat from './components/Chat/UserChat';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 
 function App() {
@@ -50,6 +52,7 @@ function App() {
   return (
     <div className="App">
       <Nav user={user} setLoginUser={setLoginUser} handleLogout={handleLogout} />
+      <ToastContainer />
       <Routes>
         <Route path="/" element={<Homepage user={user} setLoginUser={setLoginUser} />} />
         <Route path="/login" element={<Login setLoginUser={setLoginUser} />} />

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./register.css";
 import axios from "axios";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -29,22 +31,23 @@ const Register = () => {
 
   // Function to handle registration
   const register = () => {
-    const { name, email, password, reEnterPassword } = user
-    if (name && email && password && (password === reEnterPassword)) {
-      axios.post("http://localhost:9002/register", user)
-        .then( res => {
-          alert(res.data.message)
-          navigate("/login")
+    const { name, email, password, reEnterPassword } = user;
+    if (name && email && password && password === reEnterPassword) {
+      axios
+        .post("http://localhost:9002/register", user)
+        .then((res) => {
+          toast.success(res.data.message);
+          navigate("/login");
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("Registration error:", error);
-          alert("An error occurred during registration");
+          toast.error("An error occurred during registration");
         });
     } else {
-      alert("Invalid input");
+      toast.error("Invalid input");
     }
   };
-
+  
   // Effect hook to handle redirection to doctor registration
   useEffect(() => {
     if (redirectToDoctorRegistration) {
