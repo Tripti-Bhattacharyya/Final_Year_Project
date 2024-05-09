@@ -80,6 +80,7 @@ a:hover::before {
     height: 100%;
     transform: translateX(-100%);
     transition: all 0.45s;
+    z-index: 1000;
   }
 
   a::before, .logout-button::before {

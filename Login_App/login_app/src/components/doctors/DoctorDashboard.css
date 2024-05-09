@@ -90,3 +90,23 @@
     text-align: center;
     color: #031f3d;
 }
+
+@media (max-width: 470px){
+  .appointment-item {
+      margin-bottom: 20px;
+      border: 2px solid #190369;
+      padding: 10px;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+      width: 80%;
+      display: grid;
+      place-items: center;
+      box-shadow: 5px 5px rgb(97, 108, 116);
+      transition: transform 0.3s ease, box-shadow 0.3s ease; 
+  }
+  
+  .appointment-item:hover {
+      transform: translate(-5px, 5px); 
+      box-shadow: -10px 10px 20px rgba(0, 0, 0, 0.2); 
+  }
+}
