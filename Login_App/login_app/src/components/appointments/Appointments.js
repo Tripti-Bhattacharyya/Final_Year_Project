@@ -115,7 +115,8 @@ const Appointments = ({ user }) => {
                     <li key={appointment._id} className="appointment-item">
                         <div className='items-list'>
                             <span className="doctor-name">Doctor: {appointment.doctorId.name}</span>
-                            <span className="appointment-details">Date:{formatDate(appointment.date)}, Time: {appointment.timeSlot}</span>
+                            <span className="appointment-details">Date:{formatDate(appointment.date)}</span>
+                            <span className="appointment-details"> Time: {appointment.timeSlot}</span>
                             <span className="appointment-status">Status: {appointment.status}</span>
                         </div>
                         {appointment.status === "Approved" && (

@@ -54,3 +54,40 @@
 .doctor-chat-heading{
     margin-bottom: 20px;
 }
+
+@media (max-width: 765px){
+
+    .user-item {
+   
+        margin-bottom: 20px;
+        border: 2px solid #190369;
+        padding: 10px;
+        border-radius: 5px;
+         max-width: 70%;
+        margin-left: 15%;
+        box-shadow: 5px 5px rgb(97, 108, 116);
+        transition: transform 0.3s ease, box-shadow 0.3s ease; 
+    }
+    .user-item:hover {
+        transform: translate(-5px, 5px); 
+        box-shadow: -10px 10px 20px rgba(0, 0, 0, 0.2); 
+    }
+}
+
+@media (max-width: 543px){
+    .user-item {
+   
+        margin-bottom: 20px;
+        border: 2px solid #190369;
+        padding: 10px;
+        border-radius: 5px;
+         max-width: 50%;
+        margin-left: 25%;
+        box-shadow: 5px 5px rgb(97, 108, 116);
+        transition: transform 0.3s ease, box-shadow 0.3s ease; 
+    }
+    .user-item:hover {
+        transform: translate(-5px, 5px); 
+        box-shadow: -10px 10px 20px rgba(0, 0, 0, 0.2); 
+    }
+}
