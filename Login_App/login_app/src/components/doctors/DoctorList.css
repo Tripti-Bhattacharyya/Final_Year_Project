@@ -12,7 +12,7 @@
 .d_list {
     list-style-type: none;
     padding: 0;
-    justify-content: space-between;
+    justify-content: center;
     display: flex;
     flex-wrap: wrap;
   }
@@ -194,8 +194,8 @@
     .list {
       width: 90%; 
       max-width: 400px; 
-      margin: 10px;
-      margin-left: 26%;
+      margin: 9px;
+      margin-left: 2%;
       box-shadow: 5px 5px rgb(182, 187, 190);
       transition: transform 0.3s ease, box-shadow 0.3s ease; 
     }
@@ -210,5 +210,11 @@
       text-align: center;
       margin-top:10px;
      z-index: 1000;
+    }
+  }
+  @media (max-width:500px){
+    .search-bar button[type="submit"] {
+      padding: 6px 13px;
+      margin-left: 40px;
     }
   }
