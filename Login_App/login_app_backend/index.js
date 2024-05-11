@@ -97,7 +97,7 @@ const doctorSchema = new mongoose.Schema({
     timeslots: {
         monday: { start: String, end: String }
     },
-    razorpayLink: String, // Add Razorpay link field
+    razorpayLink: String, 
     isDoctor: { type: Boolean, default: true }
 });
 
@@ -120,10 +120,10 @@ const appointmentSchema = new mongoose.Schema({
     doctorId: { type: mongoose.Schema.Types.ObjectId, ref: 'Doctor' },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     senderId: { type: mongoose.Schema.Types.ObjectId },
-    content: String, // For text messages
-    fileName: String, // For non-text messages
-    fileData: Buffer, // For non-text messages
-    contentType: String, // For non-text messages
+    content: String,
+    fileName: String, 
+    fileData: Buffer, 
+    contentType: String, 
 }, { timestamps: true });
 const Message = mongoose.model('Message', messageSchema);
 

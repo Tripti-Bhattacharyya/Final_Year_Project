@@ -45,7 +45,9 @@ const Login = ({ setLoginUser }) => {
   };
 
   return (
-    <div className="login">
+   
+    <div className="login-container">
+    <div className="login-form">
       <h1>Login</h1>
       <input type="text" name="email" value={user.email} onChange={(e) => setUser({ ...user, email: e.target.value })} placeholder="Enter your Email" />
       <input type="password" name="password" value={user.password} onChange={(e) => setUser({ ...user, password: e.target.value })} placeholder="Enter your Password" />
@@ -53,9 +55,9 @@ const Login = ({ setLoginUser }) => {
       <div>or</div>
       <div className="button" onClick={() => history('/register')}>Register</div>
     </div>
-  );
+  </div>
+);
 };
-
 export default Login;
 
 
