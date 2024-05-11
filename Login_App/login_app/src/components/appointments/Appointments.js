@@ -72,7 +72,7 @@ const Appointments = ({ user }) => {
                         }
                     },
                     webhook: {
-                        url: 'https://53df-202-8-112-229.ngrok-free.app/webhook',
+                        url: 'https://8707-2402-3a80-1960-52f0-8489-2c2e-70b6-956.ngrok-free.app/webhook',
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
