@@ -22,12 +22,12 @@ const Nav = ({ user, handleLogout }) => {
 
   return (
     <div className="Nav">
-      <span className='nav-logo'>+Medicare</span>
+      <span className='nav-logo'>+MediConnect</span>
 
       <div className={`nav-items ${isOpen && "open"}`}>
         <Link to="/" onClick={closeMenu}>Home</Link>
 
-        {/* Render different links based on user type */}
+        
         {user && user._id ? (
           user.isDoctor ? (
             <>
@@ -48,7 +48,7 @@ const Nav = ({ user, handleLogout }) => {
             Logout
           </div>
         ) : (
-          <Link className='button' to="/login" onClick={closeMenu}>Login</Link>
+          <Link className='navlogin-button' to="/login" onClick={closeMenu}>Login</Link>
         )}
       </div>
 

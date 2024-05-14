@@ -62,11 +62,13 @@ const Register = () => {
   }, [redirectToDoctorRegistration, navigate]);
 
   return (
-    <div className="register">
-      <h1>Register</h1>
+    <div className="register-wrapper">
+    <div className="register-container">
+      <h1 className="register-heading">Register</h1>
       
       <input
         type="text"
+        className="register-input"
         name="name"
         value={user.name}
         placeholder="Your Name"
@@ -75,27 +77,32 @@ const Register = () => {
       
       <input
         type="text"
-      name="email"
-      value={user.email}
+        className="register-input"
+        name="email"
+        value={user.email}
         placeholder="Your Email"
-     onChange={handleUserChange}
-       />
-         <input
-        type="password"
-         name="password"
-       value={user.password}
-       placeholder="Your Password"
-       onChange={handleUserChange}
-       />
-     <input
-      type="password"
-      name="reEnterPassword"
-      value={user.reEnterPassword}
-      placeholder="Re-enter Password"
-       onChange={handleUserChange}
+        onChange={handleUserChange}
       />
       
-      <label>
+      <input
+        type="password"
+        className="register-input"
+        name="password"
+        value={user.password}
+        placeholder="Your Password"
+        onChange={handleUserChange}
+      />
+      
+      <input
+        type="password"
+        className="register-input"
+        name="reEnterPassword"
+        value={user.reEnterPassword}
+        placeholder="Re-enter Password"
+        onChange={handleUserChange}
+      />
+      
+      <label className="register-checkbox">
         Register as Doctor:
         <input
           type="checkbox"
@@ -110,13 +117,13 @@ const Register = () => {
         />
       </label>
 
-      <div className="button" onClick={register}>
+      <div className="register-button" onClick={register}>
         Register
       </div>
-      <div>or</div>
-      <div className="button" onClick={() => navigate("/login")}>
-        Login
+      <div className="login-link">
+        Already have an account? <a href="/login">Login</a>
       </div>
+    </div>
     </div>
   );
 };

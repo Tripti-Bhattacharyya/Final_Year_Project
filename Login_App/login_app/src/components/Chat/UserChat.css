@@ -294,8 +294,15 @@
         top: 40%;
   
     }
-    input[type="text"] {
-        margin-right: -25px;
+    .message-input {
+        width: 500px;
+        margin-left: 80px;
+        margin-right: -20px;
+    }
+    .file-label {
+        position: relative;
+        right: 42px;
+        top: 40%;
     }
 }
 @media (max-width: 450px) {
@@ -309,6 +316,7 @@
         width: 500px;
         margin-left: 25px;
     }
+    
 }
 @media (max-width: 355px) {
 
