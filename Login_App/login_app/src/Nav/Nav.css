@@ -55,7 +55,7 @@ a:hover::before {
 }
 
 
-.logout-button,.button{
+.logout-button,.navlogin-button{
   background-color: #ffffff;
   color: black;
   padding: 6px;

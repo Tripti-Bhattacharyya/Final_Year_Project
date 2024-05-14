@@ -1,5 +1,5 @@
 .login-container {
-    background-image: linear-gradient(rgba(230, 227, 227, 0.6), rgba(198, 228, 252, 0.877)), url('../../Images/Login.jpg');
+    background-image: linear-gradient(rgba(250, 199, 199, 0.6), rgba(176, 207, 233, 0.877)), url('../../Images/Login.jpg');
     background-size: cover;
     background-position: center;
     width: 100%;
@@ -30,7 +30,7 @@
     border-radius: 5px;
   }
   
-  .login-form .button {
+  .button {
     cursor: pointer;
     background-color: #007bff;
     color: white;
@@ -38,9 +38,48 @@
     border: none;
     border-radius: 5px;
     margin-bottom: 10px;
+    width: 50%;
+  margin-left: 100px;
+    
   }
   
-  .login-form .button:hover {
+   .button:hover {
     background-color: #0056b3;
   }
   
+  @media (max-width:500px){
+    .login-form input {
+      width: 73%;
+    }
+    .login-form input[type="text"] {
+      margin-right: -7px;
+  }
+
+  .login-form input[type="password"] {
+    margin-left: 14px;
+}
+
+.button{
+  width: 40%;
+  margin-left: 117px;
+}
+.login-form{
+  padding-left: 2px;
+  padding-right: 0px;
+}
+  }
+  
+@media (max-width:455px){
+  .login-form input {
+    width: 55%;
+  }
+  .button {
+    width: 28%;
+    margin-left: 97px;
+    font-size: 14px;
+}
+.login-form {
+  height: 348px;
+  width: 277px;
+}
+}

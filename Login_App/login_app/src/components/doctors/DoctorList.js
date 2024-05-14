@@ -67,7 +67,7 @@ const DoctorList = () => {
             <div>{doctor.degree}</div>
             <div>{doctor.hospital}</div>
             <div>Fees: Rs.{doctor.fees}</div>
-            {/* Log doctorId before navigation */}
+           
             <Link className='link' to={`/book-appointment/${doctor._id}`} >Book Appointment</Link>
           </li>
         ))}

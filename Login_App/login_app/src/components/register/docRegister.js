@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import './docRegister.css'
 const DocRegister = () => {
   const navigate = useNavigate();
   const [doctor, setDoctor] = useState({
@@ -117,21 +117,23 @@ const DocRegister = () => {
   
 
   return (
+    <div className="docregister-wrapper">
     <div className="doc-register">
-      <h1>Doctor Registration</h1>
-      <input type="text" name="name" value={doctor.name} placeholder="Your Name" onChange={handleChange} />
-      <input type="text" name="email" value={doctor.email} placeholder="Your Email" onChange={handleChange} />
-      <input type="password" name="password" value={doctor.password} placeholder="Your Password" onChange={handleChange} />
-      <input type="text" name="specialization" value={doctor.specialization} placeholder="Your Specialization" onChange={handleChange} />
-      <input type="text" name="degree" value={doctor.degree} placeholder="Your Degree" onChange={handleChange} />
-      <input type="text" name="hospital" value={doctor.hospital} placeholder="Your Hospital" onChange={handleChange} />
-      <input type="text" name="fees" value={doctor.fees} placeholder="Consultation Fee" onChange={handleChange} />
-      <input type="text" name="razorpayLink" value={doctor.razorpayLink} placeholder="Your Razorpay Link" onChange={handleChange} /> 
+      <h1 className="register-heading">Doctor Registration</h1>
+      <input className="input-field" type="text" name="name" value={doctor.name} placeholder="Your Name" onChange={handleChange} />
+      <input className="input-field" type="text" name="email" value={doctor.email} placeholder="Your Email" onChange={handleChange} />
+      <input className="input-field" type="password" name="password" value={doctor.password} placeholder="Your Password" onChange={handleChange} />
+      <input className="input-field" type="text" name="specialization" value={doctor.specialization} placeholder="Your Specialization" onChange={handleChange} />
+      <input className="input-field" type="text" name="degree" value={doctor.degree} placeholder="Your Degree" onChange={handleChange} />
+      <input className="input-field" type="text" name="hospital" value={doctor.hospital} placeholder="Your Hospital" onChange={handleChange} />
+      <input className="input-field" type="text" name="fees" value={doctor.fees} placeholder="Consultation Fee" onChange={handleChange} />
+      <input className="input-field"  type="text" name="razorpayLink" value={doctor.razorpayLink} placeholder="Your Razorpay Link" onChange={handleChange} /> 
       
-      <input type="file" accept="image/*" onChange={handlePhotoChange} />
+      <input className="input-field" type="file" accept="image/*" onChange={handlePhotoChange} />
 
       
-      <div>
+      <div className="time-slots">
+        <div className="day-slot">
         <label>Monday:</label>
         <select value={doctor.timeslots.monday.start} onChange={(e) => handleChange(e)} name="monday_start">
           <option value="">Select Start Time</option>
@@ -146,7 +148,7 @@ const DocRegister = () => {
          
         </select>
       </div>
-      <div>
+      <div className="day-slot">
         <label>Tuesday:</label>
         <select value={doctor.timeslots.tuesday.start} onChange={(e) => handleChange(e)} name="tuesday_start">
           <option value="">Select Start Time</option>
@@ -161,11 +163,73 @@ const DocRegister = () => {
        
         </select>
       </div>
+      <div className="day-slot">
+        <label>Wednesday:</label>
+        <select value={doctor.timeslots.tuesday.start} onChange={(e) => handleChange(e)} name="tuesday_start">
+          <option value="">Select Start Time</option>
+          <option value="9:00 AM">9:00 AM</option>
+          <option value="1:00 PM">1:00 PM</option>
+         
+        </select>
+        <select value={doctor.timeslots.tuesday.end} onChange={(e) => handleChange(e)} name="tuesday_end">
+          <option value="">Select End Time</option>
+          <option value="12:00 PM">12:00 PM</option>
+          <option value="5:00 PM">5:00 PM</option>
+       
+        </select>
+      </div>
+      <div className="day-slot">
+        <label>Thursday:</label>
+        <select value={doctor.timeslots.tuesday.start} onChange={(e) => handleChange(e)} name="tuesday_start">
+          <option value="">Select Start Time</option>
+          <option value="9:00 AM">9:00 AM</option>
+          <option value="1:00 PM">1:00 PM</option>
+         
+        </select>
+        <select value={doctor.timeslots.tuesday.end} onChange={(e) => handleChange(e)} name="tuesday_end">
+          <option value="">Select End Time</option>
+          <option value="12:00 PM">12:00 PM</option>
+          <option value="5:00 PM">5:00 PM</option>
+       
+        </select>
+      </div>
+      <div className="day-slot">
+        <label>Friday:</label>
+        <select value={doctor.timeslots.tuesday.start} onChange={(e) => handleChange(e)} name="tuesday_start">
+          <option value="">Select Start Time</option>
+          <option value="9:00 AM">9:00 AM</option>
+          <option value="1:00 PM">1:00 PM</option>
+         
+        </select>
+        <select value={doctor.timeslots.tuesday.end} onChange={(e) => handleChange(e)} name="tuesday_end">
+          <option value="">Select End Time</option>
+          <option value="12:00 PM">12:00 PM</option>
+          <option value="5:00 PM">5:00 PM</option>
+       
+        </select>
+      </div>
+      <div className="day-slot">
+        <label>Saturday:</label>
+        <select value={doctor.timeslots.tuesday.start} onChange={(e) => handleChange(e)} name="tuesday_start">
+          <option value="">Select Start Time</option>
+          <option value="9:00 AM">9:00 AM</option>
+          <option value="1:00 PM">1:00 PM</option>
+         
+        </select>
+        <select value={doctor.timeslots.tuesday.end} onChange={(e) => handleChange(e)} name="tuesday_end">
+          <option value="">Select End Time</option>
+          <option value="12:00 PM">12:00 PM</option>
+          <option value="5:00 PM">5:00 PM</option>
+       
+        </select>
+      </div>
   
+ </div>
       
-      <div className="button" onClick={registerDoctor}>
+      <div className="doc-button" onClick={registerDoctor}>
         Register as Doctor
       </div>
+    </div>
     </div>
   );
 };
