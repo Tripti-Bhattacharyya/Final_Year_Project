@@ -21,6 +21,10 @@ const DocRegister = () => {
     timeslots: {
       monday: { start: "", end: "" },
       tuesday: { start: "", end: "" },
+      wednesday: { start: "", end: "" },
+      thursday: { start: "", end: "" },
+      friday: { start: "", end: "" },
+      saturday: { start: "", end: "" },
       
     },
   });
@@ -165,13 +169,13 @@ const DocRegister = () => {
       </div>
       <div className="day-slot">
         <label>Wednesday:</label>
-        <select value={doctor.timeslots.tuesday.start} onChange={(e) => handleChange(e)} name="tuesday_start">
+        <select value={doctor.timeslots.wednesday.start} onChange={(e) => handleChange(e)} name="wednesday_start">
           <option value="">Select Start Time</option>
           <option value="9:00 AM">9:00 AM</option>
           <option value="1:00 PM">1:00 PM</option>
          
         </select>
-        <select value={doctor.timeslots.tuesday.end} onChange={(e) => handleChange(e)} name="tuesday_end">
+        <select value={doctor.timeslots.wednesday.end} onChange={(e) => handleChange(e)} name="wednesday_end">
           <option value="">Select End Time</option>
           <option value="12:00 PM">12:00 PM</option>
           <option value="5:00 PM">5:00 PM</option>
@@ -180,13 +184,13 @@ const DocRegister = () => {
       </div>
       <div className="day-slot">
         <label>Thursday:</label>
-        <select value={doctor.timeslots.tuesday.start} onChange={(e) => handleChange(e)} name="tuesday_start">
+        <select value={doctor.timeslots.thursday.start} onChange={(e) => handleChange(e)} name="thursday_start">
           <option value="">Select Start Time</option>
           <option value="9:00 AM">9:00 AM</option>
           <option value="1:00 PM">1:00 PM</option>
          
         </select>
-        <select value={doctor.timeslots.tuesday.end} onChange={(e) => handleChange(e)} name="tuesday_end">
+        <select value={doctor.timeslots.thursday.end} onChange={(e) => handleChange(e)} name="thursday_end">
           <option value="">Select End Time</option>
           <option value="12:00 PM">12:00 PM</option>
           <option value="5:00 PM">5:00 PM</option>
@@ -195,13 +199,13 @@ const DocRegister = () => {
       </div>
       <div className="day-slot">
         <label>Friday:</label>
-        <select value={doctor.timeslots.tuesday.start} onChange={(e) => handleChange(e)} name="tuesday_start">
+        <select value={doctor.timeslots.friday.start} onChange={(e) => handleChange(e)} name="friday_start">
           <option value="">Select Start Time</option>
           <option value="9:00 AM">9:00 AM</option>
           <option value="1:00 PM">1:00 PM</option>
          
         </select>
-        <select value={doctor.timeslots.tuesday.end} onChange={(e) => handleChange(e)} name="tuesday_end">
+        <select value={doctor.timeslots.friday.end} onChange={(e) => handleChange(e)} name="friday_end">
           <option value="">Select End Time</option>
           <option value="12:00 PM">12:00 PM</option>
           <option value="5:00 PM">5:00 PM</option>
@@ -210,13 +214,13 @@ const DocRegister = () => {
       </div>
       <div className="day-slot">
         <label>Saturday:</label>
-        <select value={doctor.timeslots.tuesday.start} onChange={(e) => handleChange(e)} name="tuesday_start">
+        <select value={doctor.timeslots.saturday.start} onChange={(e) => handleChange(e)} name="saturday_start">
           <option value="">Select Start Time</option>
           <option value="9:00 AM">9:00 AM</option>
           <option value="1:00 PM">1:00 PM</option>
          
         </select>
-        <select value={doctor.timeslots.tuesday.end} onChange={(e) => handleChange(e)} name="tuesday_end">
+        <select value={doctor.timeslots.saturday.end} onChange={(e) => handleChange(e)} name="saturday_end">
           <option value="">Select End Time</option>
           <option value="12:00 PM">12:00 PM</option>
           <option value="5:00 PM">5:00 PM</option>
