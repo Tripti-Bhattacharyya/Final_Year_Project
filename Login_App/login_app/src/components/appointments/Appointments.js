@@ -37,11 +37,11 @@ const Appointments = ({ user }) => {
 
             
            
-                // Directly open Razorpay checkout for payment
+               
                 const options = {
                     key: 'rzp_test_X50Ftg7u2gTNyg',
                     currency: 'INR',
-                    name: 'Medicare',
+                    name: 'Mediconnect',
                     description: 'Appointment Payment',
                     amount: amount,
                     prefill: {
@@ -72,7 +72,7 @@ const Appointments = ({ user }) => {
                         }
                     },
                     webhook: {
-                        url: 'https://8707-2402-3a80-1960-52f0-8489-2c2e-70b6-956.ngrok-free.app/webhook',
+                        url: 'https://ee6e-2402-3a80-1964-b07a-70fd-22da-daf2-b2ce.ngrok-free.app/webhook',
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'

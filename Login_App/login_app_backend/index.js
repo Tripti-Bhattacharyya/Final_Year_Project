@@ -32,7 +32,7 @@ const io = new Server(server, {
 
 app.use(express.static('public'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true })); // Add extended: true option
+app.use(express.urlencoded({ extended: true })); 
 
 
  
@@ -302,10 +302,7 @@ app.post("/login", async (req, res) => {
         const doctor = await Doctor.findOne({ email });
 
         if (doctor) {
-            // console.log("Doctor found:", doctor);
-            // console.log("Doctor password:", doctor.password);
-
-            // Ensure that doctor.password is a hashed password before comparing
+           
             try {
                 const passwordMatch = await bcrypt.compare(password, doctor.password);
 
@@ -630,34 +627,7 @@ app.get('/search-doctors', async (req, res) => {
     }
 });
 
-// Backend route to update appointment status after payment
-app.put('/appointments/:id', authenticateUser, async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { status } = req.body;
 
-        // Check if the provided status is a valid appointment status
-        const validStatuses = ['Pending', 'Approved', 'Done',  'Paid'];
-        if (!validStatuses.includes(status)) {
-            return res.status(400).json({ message: 'Invalid appointment status' });
-        }
-
-        // Find the appointment by ID
-        const appointment = await Appointment.findById(id);
-        if (!appointment) {
-            return res.status(404).json({ message: 'Appointment not found' });
-        }
-
-        // Update the appointment status
-        appointment.status = status;
-        await appointment.save();
-
-        res.json({ message: 'Appointment status updated successfully', appointment });
-    } catch (error) {
-        console.error('Error updating appointment status:', error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-});
 
 // Function to verify Razorpay webhook signature
 
@@ -712,8 +682,8 @@ app.post('/webhook', async (req, res) => {
     try {
         const response = await axios.get(`https://api.razorpay.com/v1/payments/${paymentId}`, {
             auth: {
-                username: 'rzp_test_X50Ftg7u2gTNyg', // Replace with your actual API key ID
-                password: 'hoESSHePnv6b0u5uJ2w7RmPR' // Replace with your actual API key secret
+                username: 'rzp_test_X50Ftg7u2gTNyg', 
+                password: 'hoESSHePnv6b0u5uJ2w7RmPR' 
             }
         });
 
@@ -721,7 +691,7 @@ app.post('/webhook', async (req, res) => {
         if (paymentDetails.status === 'captured') {
             // If payment is already captured, update appointment status to 'Paid'
             const appointmentId = req.body.payload.payment.entity.notes.appointmentId;
-          // await Appointment.findByIdAndUpdate(appointmentId, { status: 'Paid' });
+         await Appointment.findByIdAndUpdate(appointmentId, { status: 'Paid' });
 
             return res.status(200).send('Appointment status updated to Paid');
         } else if (paymentDetails.status === 'authorized') {
